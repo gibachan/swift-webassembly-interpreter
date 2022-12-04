@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "swiftleb128",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/gibachan/SwiftLEB128.git",
+      "state" : {
+        "revision" : "6950759ed7c1029ad7200cbc706e674b569aa7b0",
+        "version" : "0.1.0"
+      }
+    }
+  ],
+  "version" : 2
+}
