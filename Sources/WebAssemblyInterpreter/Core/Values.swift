@@ -31,6 +31,5 @@ public typealias I32 = Int32
 public typealias I64 = Int64
 
 // Floating point
-public typealias F16 = Float16
 public typealias F32 = Float32
 public typealias F64 = Float64
