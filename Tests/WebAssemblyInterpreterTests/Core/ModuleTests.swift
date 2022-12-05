@@ -1,12 +1,12 @@
 //
 //  ModuleTests.swift
-//  
+//
 //
 //  Created by Tatsuyuki Kobayashi on 2022/11/26.
 //
 
-import XCTest
 @testable import WebAssemblyInterpreter
+import XCTest
 
 final class ModuleTests: XCTestCase {
     func testFindExportedFunctionFail() {
@@ -24,7 +24,7 @@ final class ModuleTests: XCTestCase {
                                                  exports: .init(length: 1, elements: [.init(name: "hoge", descriptor: .function(0))])),
                             codeSection: nil
         )
-        
+
         XCTAssertNil(module.findExportedFunction(withName: "piyo"))
     }
 }

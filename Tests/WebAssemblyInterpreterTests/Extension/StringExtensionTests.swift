@@ -1,12 +1,12 @@
 //
 //  StringExtensionTests.swift
-//  
+//
 //
 //  Created by Tatsuyuki Kobayashi on 2022/11/13.
 //
 
-import XCTest
 @testable import WebAssemblyInterpreter
+import XCTest
 
 final class StringExtensionTests: XCTestCase {
     func testEncode() {

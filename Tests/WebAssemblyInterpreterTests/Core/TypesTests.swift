@@ -1,12 +1,12 @@
 //
 //  TypesTests.swift
-//  
+//
 //
 //  Created by Tatsuyuki Kobayashi on 2022/12/03.
 //
 
-import XCTest
 @testable import WebAssemblyInterpreter
+import XCTest
 
 final class TypesTests: XCTestCase {
     func testValueTypeFrom() {

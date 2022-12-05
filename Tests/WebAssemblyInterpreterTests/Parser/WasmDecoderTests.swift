@@ -1,6 +1,6 @@
-import XCTest
 import Foundation
 @testable import WebAssemblyInterpreter
+import XCTest
 
 final class WasmDecoderTests: XCTestCase {
     func testDecodeModule() throws {
@@ -8,36 +8,36 @@ final class WasmDecoderTests: XCTestCase {
         let filePath = fileURL.path
         let decoder = try WasmDecoder(filePath: filePath)
         let wasm = try decoder.invoke()
-        
+
         XCTAssertNil(wasm.module.typeSection)
         XCTAssertNil(wasm.module.functionSection)
         XCTAssertNil(wasm.module.exportSection)
         XCTAssertNil(wasm.module.codeSection)
     }
-    
+
     func testDecodeFunc() throws {
         let fileURL = Bundle.module.url(forResource: "func", withExtension: "wasm")!
         let filePath = fileURL.path
         let decoder = try WasmDecoder(filePath: filePath)
         let wasm = try decoder.invoke()
-        
+
         XCTAssertNotNil(wasm.module.typeSection)
         XCTAssertNotNil(wasm.module.functionSection)
         XCTAssertNil(wasm.module.exportSection)
         XCTAssertNotNil(wasm.module.codeSection)
     }
-    
+
     func testDecodeFuncParameter() throws {
         let fileURL = Bundle.module.url(forResource: "func_parameter", withExtension: "wasm")!
         let filePath = fileURL.path
         let decoder = try WasmDecoder(filePath: filePath)
         let wasm = try decoder.invoke()
-        
+
         XCTAssertNotNil(wasm.module.typeSection)
         XCTAssertNotNil(wasm.module.functionSection)
         XCTAssertNil(wasm.module.exportSection)
         XCTAssertNotNil(wasm.module.codeSection)
-        
+
         // type section
         guard let typeSection = wasm.module.typeSection else {
             XCTFail("Type section is missing")
@@ -76,13 +76,13 @@ final class WasmDecoderTests: XCTestCase {
         }
         XCTAssertEqual(functionType.resultType2.valueTypes.length, 0)
     }
-    
+
     func testDecodeFuncLocal() throws {
         let fileURL = Bundle.module.url(forResource: "func_local", withExtension: "wasm")!
         let filePath = fileURL.path
         let decoder = try WasmDecoder(filePath: filePath)
         let wasm = try decoder.invoke()
-        
+
         guard let codeSection = wasm.module.codeSection else {
             XCTFail("Code section is missing")
             return
@@ -94,7 +94,7 @@ final class WasmDecoderTests: XCTestCase {
             XCTFail("Code is missing")
             return
         }
-        
+
         XCTAssertEqual(code.locals.count, 3)
     }
 
@@ -103,12 +103,12 @@ final class WasmDecoderTests: XCTestCase {
         let filePath = fileURL.path
         let decoder = try WasmDecoder(filePath: filePath)
         let wasm = try decoder.invoke()
-        
+
         XCTAssertNotNil(wasm.module.typeSection)
         XCTAssertNotNil(wasm.module.functionSection)
         XCTAssertNil(wasm.module.exportSection)
         XCTAssertNotNil(wasm.module.codeSection)
-        
+
         // code section
         guard let codeSection = wasm.module.codeSection else {
             XCTFail("Code section is missing")
@@ -137,13 +137,13 @@ final class WasmDecoderTests: XCTestCase {
             return
         }
     }
-    
+
     func testDecodeFuncExport() throws {
         let fileURL = Bundle.module.url(forResource: "func_export", withExtension: "wasm")!
         let filePath = fileURL.path
         let decoder = try WasmDecoder(filePath: filePath)
         let wasm = try decoder.invoke()
-        
+
         XCTAssertNotNil(wasm.module.typeSection)
         XCTAssertNotNil(wasm.module.functionSection)
         XCTAssertNotNil(wasm.module.exportSection)
@@ -163,7 +163,7 @@ final class WasmDecoderTests: XCTestCase {
         XCTAssertEqual(code.size, 2)
         XCTAssertEqual(code.locals.count, 0)
         XCTAssertEqual(code.expression.instructions.count, 1) // end
-        
+
         // export section
         guard let exportSection = wasm.module.exportSection else {
             XCTFail("Export section is missing")
@@ -182,27 +182,27 @@ final class WasmDecoderTests: XCTestCase {
             XCTFail("Wrong export descriptor")
         }
     }
-    
+
     func testDecodeFuncLoop() throws {
         let fileURL = Bundle.module.url(forResource: "func_loop", withExtension: "wasm")!
         let filePath = fileURL.path
         let decoder = try WasmDecoder(filePath: filePath)
         let wasm = try decoder.invoke()
-        
+
         XCTAssertNotNil(wasm.module.codeSection)
     }
-    
+
     func testDecodeFuncAddInt() throws {
         let fileURL = Bundle.module.url(forResource: "func_add_int", withExtension: "wasm")!
         let filePath = fileURL.path
         let decoder = try WasmDecoder(filePath: filePath)
         let wasm = try decoder.invoke()
-        
+
         XCTAssertNotNil(wasm.module.typeSection)
         XCTAssertNotNil(wasm.module.functionSection)
         XCTAssertNotNil(wasm.module.exportSection)
         XCTAssertNotNil(wasm.module.codeSection)
-        
+
         // type section
         guard let typeSection = wasm.module.typeSection else {
             XCTFail("Type section is missing")
@@ -269,7 +269,7 @@ final class WasmDecoderTests: XCTestCase {
         XCTAssertEqual(code.size, 7)
         XCTAssertEqual(code.locals.count, 0)
         XCTAssertEqual(code.expression.instructions.count, 4)
-        
+
         let getLocal1 = code.expression.instructions[0]
         if case .localGet(let index) = getLocal1 {
             XCTAssertEqual(index, 0)
@@ -317,18 +317,18 @@ final class WasmDecoderTests: XCTestCase {
             XCTFail("Wrong export descriptor")
         }
     }
-    
+
     func testDecodeFuncReturnSumSquared() throws {
         let fileURL = Bundle.module.url(forResource: "func_return_sum_squared", withExtension: "wasm")!
         let filePath = fileURL.path
         let decoder = try WasmDecoder(filePath: filePath)
         let wasm = try decoder.invoke()
-        
+
         XCTAssertNotNil(wasm.module.typeSection)
         XCTAssertNotNil(wasm.module.functionSection)
         XCTAssertNotNil(wasm.module.exportSection)
         XCTAssertNotNil(wasm.module.codeSection)
-        
+
         // type section
         guard let typeSection = wasm.module.typeSection else {
             XCTFail("Type section is missing")
@@ -393,7 +393,7 @@ final class WasmDecoderTests: XCTestCase {
             return
         }
         XCTAssertEqual(code.size, 16)
-        
+
         // Local
         XCTAssertEqual(code.locals.count, 1)
         guard let local = code.locals.first else {
@@ -405,7 +405,7 @@ final class WasmDecoderTests: XCTestCase {
             return
         }
         XCTAssertEqual(valueType, .i32)
-        
+
         // Instructions
         XCTAssertEqual(code.expression.instructions.count, 8)
         let localGet1 = code.expression.instructions[0]
@@ -483,69 +483,69 @@ final class WasmDecoderTests: XCTestCase {
             XCTFail("Wrong export descriptor")
         }
     }
-    
+
     func testDecodeGlobal() throws {
         let fileURL = Bundle.module.url(forResource: "global", withExtension: "wasm")!
         let filePath = fileURL.path
         let decoder = try WasmDecoder(filePath: filePath)
         let wasm = try decoder.invoke()
-        
+
         guard let globalSection = wasm.module.globalSection else {
             XCTFail("Global section is missing")
             return
         }
-        
+
         XCTAssertEqual(globalSection.globals.length, 1)
-        
+
         guard let global = globalSection.globals.elements.first else {
             XCTFail("Global is missing")
             return
         }
-        
+
         XCTAssertEqual(global.type.valueType, .number(.i32))
         XCTAssertEqual(global.type.mutability, .const)
     }
-    
+
     func testDecodeMutableGlobal() throws {
         let fileURL = Bundle.module.url(forResource: "mutable_global", withExtension: "wasm")!
         let filePath = fileURL.path
         let decoder = try WasmDecoder(filePath: filePath)
         let wasm = try decoder.invoke()
-        
+
         guard let globalSection = wasm.module.globalSection else {
             XCTFail("Global section is missing")
             return
         }
-        
+
         XCTAssertEqual(globalSection.globals.length, 1)
-        
+
         guard let global = globalSection.globals.elements.first else {
             XCTFail("Global is missing")
             return
         }
-        
+
         XCTAssertEqual(global.type.valueType, .number(.i32))
         XCTAssertEqual(global.type.mutability, .var)
     }
-    
+
     func testDecodeImportFunction() throws {
         let fileURL = Bundle.module.url(forResource: "import_function", withExtension: "wasm")!
         let filePath = fileURL.path
         let decoder = try WasmDecoder(filePath: filePath)
         let wasm = try decoder.invoke()
-        
+
         guard let importSection = wasm.module.importSection else {
             XCTFail("Import section is missing")
             return
         }
-        
+
         XCTAssertEqual(importSection.imports.length, 1)
-        
+
         guard let `import` = importSection.imports.elements.first else {
             XCTFail("Import is missing")
             return
         }
-        
+
         XCTAssertEqual(`import`.module, "env")
         XCTAssertEqual(`import`.name, "imported_func")
     }
