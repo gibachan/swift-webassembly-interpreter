@@ -417,7 +417,7 @@ private extension WasmDecoder {
                 throw WasmDecodeError.illegalExpression
             }
             
-            print("instructionID=\(instructionID)")
+//            print("instructionID=\(instructionID)")
             
             let instruction: Instruction
             switch instructionID {
@@ -445,6 +445,8 @@ private extension WasmDecoder {
                     throw WasmDecodeError.illegalExpression
                 }
                 instruction = .brIf(index)
+            case .return:
+                instruction = .return
             case .call:
                 guard let index = source.consumeU32() else {
                     throw WasmDecodeError.illegalExpression
@@ -503,6 +505,8 @@ private extension WasmDecoder {
                 instruction = .i32Sub
             case .i32Mul:
                 instruction = .i32Mul
+            case .i32RemU:
+                instruction = .i32RemU
             // Expressions
             case .end:
                 instruction = .end

@@ -67,4 +67,31 @@ final class RuntimeTests: XCTestCase {
                            functionName: "increment_global", arguments: [], result: &result)
         XCTAssertEqual(result, .i32(3))
     }
+
+    func testIsPrime() throws {
+        let fileURL = Bundle.module.url(forResource: "is_prime", withExtension: "wasm")!
+        let filePath = fileURL.path
+        let decoder = try WasmDecoder(filePath: filePath)
+        let wasm = try decoder.invoke()
+
+        let runtime = Runtime()
+        let moduleInstance = runtime.instanciate(module: wasm.module)
+        var result: Value?
+
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "is_prime", arguments: [.i32(1)], result: &result)
+        XCTAssertEqual(result, .i32(0))
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "is_prime", arguments: [.i32(2)], result: &result)
+        XCTAssertEqual(result, .i32(1))
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "is_prime", arguments: [.i32(97)], result: &result)
+        XCTAssertEqual(result, .i32(1))
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "is_prime", arguments: [.i32(98)], result: &result)
+        XCTAssertEqual(result, .i32(0))
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "is_prime", arguments: [.i32(997)], result: &result)
+        XCTAssertEqual(result, .i32(1))
+    }
 }

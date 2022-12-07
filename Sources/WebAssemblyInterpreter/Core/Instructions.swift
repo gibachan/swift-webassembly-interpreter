@@ -19,6 +19,7 @@ enum Instruction {
     case `if`(BlockType) // TODO: implement else instruction
     case br(LabelIndex)
     case brIf(LabelIndex)
+    case `return`
     case call(FunctionIndex)
 
     // Variable Instructions
@@ -44,6 +45,7 @@ enum Instruction {
     case i32Add
     case i32Sub
     case i32Mul
+    case i32RemU
 
     // Expressions
     // https://webassembly.github.io/spec/core/binary/instructions.html#expressions
@@ -61,6 +63,7 @@ extension Instruction {
         case `if` = 0x04
         case br = 0x0C
         case brIf = 0x0D
+        case `return` = 0x0F
         case call = 0x10
         
         // Variable Instructions
@@ -86,6 +89,7 @@ extension Instruction {
         case i32Add = 0x6A
         case i32Sub = 0x6B
         case i32Mul = 0x6C
+        case i32RemU = 0x70
 
         // Expressions
         // https://webassembly.github.io/spec/core/binary/instructions.html#expressions
@@ -101,6 +105,7 @@ extension Instruction {
         case .if: return .if
         case .br: return .br
         case .brIf: return .brIf
+        case .return: return .return
         case .call: return .call
             
         case .localGet: return .localGet
@@ -122,6 +127,7 @@ extension Instruction {
         case .i32Add: return .i32Add
         case .i32Sub: return .i32Sub
         case .i32Mul: return .i32Mul
+        case .i32RemU: return .i32RemU
             
         case .end: return .end
         }

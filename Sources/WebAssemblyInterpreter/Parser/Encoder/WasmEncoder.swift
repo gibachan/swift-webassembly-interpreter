@@ -320,13 +320,13 @@ private extension WasmEncoder {
                     bytes.append($0)
                 }
             // Control InstructionsI
-            case .unreachable, .nop:
+            case .unreachable, .nop, .return:
                 break
             // Variable Instructions
             case .f32Add:
                 break
             // Numeric Instruction
-            case .i64Const, .f32Const, .f64Const, .i32Eq, .i32GeU, .i32Add, .i32Sub, .i32Mul:
+            case .i64Const, .f32Const, .f64Const, .i32Eq, .i32GeU, .i32Add, .i32Sub, .i32Mul, .i32RemU:
                 break
             // Expressions
             case .end:

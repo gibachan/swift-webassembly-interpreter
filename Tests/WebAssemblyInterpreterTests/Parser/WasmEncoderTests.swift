@@ -152,6 +152,19 @@ final class WasmEncoderTests: XCTestCase {
 
         XCTAssertEqual(encoded, decodeWasm(fileName: fileName))
     }
+
+    func testEncodeIsPrime() throws {
+        let fileName = "is_prime"
+        let fileURL = Bundle.module.url(forResource: fileName, withExtension: "wasm")!
+        let filePath = fileURL.path
+        let decoder = try WasmDecoder(filePath: filePath)
+        let wasm = try decoder.invoke()
+
+        let encoder = WasmEncoder(wasm: wasm)
+        let encoded = try encoder.invoke()
+
+        XCTAssertEqual(encoded, decodeWasm(fileName: fileName))
+    }
 }
 
 private extension WasmEncoderTests {

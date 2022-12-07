@@ -12,6 +12,7 @@ final class Frame {
     let module: ModuleInstance
     let function: Function
     var locals: [Value]
+    var pc: Int = 0
     
     init(module: ModuleInstance,
          function: Function,

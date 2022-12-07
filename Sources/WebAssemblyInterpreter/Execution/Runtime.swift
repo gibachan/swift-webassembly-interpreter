@@ -96,26 +96,28 @@ private extension Runtime {
         }
         
         call(moduleInstance: moduleInstance,
-             functionIndex: functionAddress)
+             functionAddress: functionAddress)
         
-        var pc = 0
         while stack.currentFrame != nil {
-            guard let instructions = stack.currentFrame?.function.instructions else { break }
+            let frame = stack.currentFrame!
+            let instructions = frame.function.instructions
             
-            try executeInstruction(instructions: instructions, pc: &pc)
-            pc += 1
+//            print("pc=\(frame.pc), instruction=\(instructions[frame.pc])")
 
-            print("pc=\(pc)")
+            try executeInstruction(instructions: instructions, pc: &frame.pc)
+
+            frame.pc += 1
+
         }
     }
 
     func call(moduleInstance: ModuleInstance,
-              functionIndex: FunctionAddress) {
-        if functionIndex >= store.functions.count {
+              functionAddress: FunctionAddress) {
+        if functionAddress >= store.functions.count {
             fatalError()
         }
         
-        let function = store.getFunction(index: functionIndex)
+        let function = store.getFunction(index: functionAddress)
         var locals: [Value] = []
         function.type.resultType1.valueTypes.elements
             .reversed()
@@ -167,7 +169,7 @@ private extension Runtime {
              
             let label = Label(blockType: blockType, block: block)
             stack.push(label: label)
-        case let .if(blockType):
+        case .if:
             guard let value = stack.pop(.number(.i32)) else {
                 fatalError("i32 values must be in the stack")
             }
@@ -186,7 +188,7 @@ private extension Runtime {
                 fatalError("Not implemented yet")
             }
             if ifValue {
-                pc = block.endIndex! + 1
+                pc = block.endIndex! //+ 1
             } else {
                 pc = block.startIndex
                 
@@ -221,9 +223,24 @@ private extension Runtime {
                 executeBr(labelIndex: labelIndex,
                           pc: &pc)
             }
-        case .call:
-            // TODO: Call imported function
-            break
+        case .return:
+            guard let frame = stack.currentFrame else {
+                fatalError()
+            }
+            // .number(.i32) must be an arity of current frame
+            guard let value = stack.pop(.number(.i32)) else {
+                fatalError("i32 values must be in the stack")
+            }
+            
+            stack.popCurrentFrame()
+            stack.push(value: value)
+        case let .call(functionIndex):
+            guard let frame = stack.currentFrame else {
+                fatalError()
+            }
+            call(moduleInstance: frame.module,
+                 functionAddress: FunctionAddress(functionIndex))
+            
         case let .localGet(localIndex):
             let value = stack.currentFrame!.locals[Int(localIndex)]
             stack.push(value: value)
@@ -264,7 +281,18 @@ private extension Runtime {
         case .f64Const:
             fatalError()
         case .i32Eq:
-            fatalError()
+            // https://webassembly.github.io/spec/core/exec/numerics.html#xref-exec-numerics-op-ieq-mathrm-ieq-n-i-1-i-2
+            guard let c2Value = stack.pop(.number(.i32)),
+                  let c1Value = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value1) = c1Value,
+                  case .i32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+            
+            let result: I32 = value1 == value2 ? 1 : 0
+            stack.push(value: Value(value: result))
         case .i32GeU:
             guard let c2Value = stack.pop(.number(.i32)),
                   let c1Value = stack.pop(.number(.i32)) else {
@@ -293,6 +321,18 @@ private extension Runtime {
             fatalError()
         case .i32Mul:
             fatalError()
+        case .i32RemU:
+            guard let c2Value = stack.pop(.number(.i32)),
+                  let c1Value = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value1) = c1Value,
+                  case .i32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+            
+            let result: I32 = value1 % value2
+            stack.push(value: Value(value: result))
         case .end:
             if pc != (instructions.count - 1) {
                 stack.popCurrentLabel()
@@ -316,12 +356,16 @@ private extension Runtime {
                 if frame.id != stack.currentFrame?.id {
                     fatalError("Current element must be current frame")
                 }
+
+
+                
+                stack.popCurrentFrame()
+                stack.push(value: resultValue)
             case .label, .value:
                 fatalError("Current element must be current frame")
             }
             
-            stack.popCurrentFrame()
-            stack.push(value: resultValue)
+            
         }
     }
     

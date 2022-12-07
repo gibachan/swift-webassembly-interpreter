@@ -18,6 +18,10 @@ let package = Package(
         .package(url: "https://github.com/gibachan/SwiftLEB128.git", from: "0.1.0"),
     ],
     targets: [
+        .executableTarget(
+            name: "WebAssemblyInterpreterDemo",
+            dependencies: ["WebAssemblyInterpreter"]
+        ),
         .target(
             name: "WebAssemblyInterpreter",
             dependencies: ["SwiftLEB128"],
