@@ -12,9 +12,7 @@ import XCTest
 final class WasmEncoderTests: XCTestCase {
     func testEncodeModule() throws {
         let fileName = "module"
-        let fileURL = Bundle.module.url(forResource: fileName, withExtension: "wasm")!
-        let filePath = fileURL.path
-        let decoder = try WasmDecoder(filePath: filePath)
+        let decoder = try WasmDecoder(filePath: path(for: fileName))
         let wasm = try decoder.invoke()
 
         let encoder = WasmEncoder(wasm: wasm)
@@ -25,9 +23,7 @@ final class WasmEncoderTests: XCTestCase {
 
     func testEncodeFunc() throws {
         let fileName = "func"
-        let fileURL = Bundle.module.url(forResource: fileName, withExtension: "wasm")!
-        let filePath = fileURL.path
-        let decoder = try WasmDecoder(filePath: filePath)
+        let decoder = try WasmDecoder(filePath: path(for: fileName))
         let wasm = try decoder.invoke()
 
         let encoder = WasmEncoder(wasm: wasm)
@@ -38,9 +34,7 @@ final class WasmEncoderTests: XCTestCase {
 
     func testEncodeFuncParameter() throws {
         let fileName = "func_parameter"
-        let fileURL = Bundle.module.url(forResource: fileName, withExtension: "wasm")!
-        let filePath = fileURL.path
-        let decoder = try WasmDecoder(filePath: filePath)
+        let decoder = try WasmDecoder(filePath: path(for: fileName))
         let wasm = try decoder.invoke()
 
         let encoder = WasmEncoder(wasm: wasm)
@@ -51,9 +45,7 @@ final class WasmEncoderTests: XCTestCase {
 
     func testEncodeFuncReturnConst() throws {
         let fileName = "func_return_const"
-        let fileURL = Bundle.module.url(forResource: fileName, withExtension: "wasm")!
-        let filePath = fileURL.path
-        let decoder = try WasmDecoder(filePath: filePath)
+        let decoder = try WasmDecoder(filePath: path(for: fileName))
         let wasm = try decoder.invoke()
 
         let encoder = WasmEncoder(wasm: wasm)
@@ -64,9 +56,7 @@ final class WasmEncoderTests: XCTestCase {
 
     func testEncodeFuncExport() throws {
         let fileName = "func_export"
-        let fileURL = Bundle.module.url(forResource: fileName, withExtension: "wasm")!
-        let filePath = fileURL.path
-        let decoder = try WasmDecoder(filePath: filePath)
+        let decoder = try WasmDecoder(filePath: path(for: fileName))
         let wasm = try decoder.invoke()
 
         let encoder = WasmEncoder(wasm: wasm)
@@ -77,9 +67,7 @@ final class WasmEncoderTests: XCTestCase {
 
     func testEncodeFuncLoop() throws {
         let fileName = "func_loop"
-        let fileURL = Bundle.module.url(forResource: fileName, withExtension: "wasm")!
-        let filePath = fileURL.path
-        let decoder = try WasmDecoder(filePath: filePath)
+        let decoder = try WasmDecoder(filePath: path(for: fileName))
         let wasm = try decoder.invoke()
 
         let encoder = WasmEncoder(wasm: wasm)
@@ -90,9 +78,7 @@ final class WasmEncoderTests: XCTestCase {
 
     func testEncodeFuncAddInt() throws {
         let fileName = "func_add_int"
-        let fileURL = Bundle.module.url(forResource: fileName, withExtension: "wasm")!
-        let filePath = fileURL.path
-        let decoder = try WasmDecoder(filePath: filePath)
+        let decoder = try WasmDecoder(filePath: path(for: fileName))
         let wasm = try decoder.invoke()
 
         let encoder = WasmEncoder(wasm: wasm)
@@ -103,9 +89,7 @@ final class WasmEncoderTests: XCTestCase {
 
     func testEncodeFuncReturnSumSquared() throws {
         let fileName = "func_return_sum_squared"
-        let fileURL = Bundle.module.url(forResource: fileName, withExtension: "wasm")!
-        let filePath = fileURL.path
-        let decoder = try WasmDecoder(filePath: filePath)
+        let decoder = try WasmDecoder(filePath: path(for: fileName))
         let wasm = try decoder.invoke()
 
         let encoder = WasmEncoder(wasm: wasm)
@@ -116,9 +100,7 @@ final class WasmEncoderTests: XCTestCase {
 
     func testEncodeGlobal() throws {
         let fileName = "global"
-        let fileURL = Bundle.module.url(forResource: fileName, withExtension: "wasm")!
-        let filePath = fileURL.path
-        let decoder = try WasmDecoder(filePath: filePath)
+        let decoder = try WasmDecoder(filePath: path(for: fileName))
         let wasm = try decoder.invoke()
 
         let encoder = WasmEncoder(wasm: wasm)
@@ -129,9 +111,7 @@ final class WasmEncoderTests: XCTestCase {
 
     func testEncodeMutableGlobal() throws {
         let fileName = "mutable_global"
-        let fileURL = Bundle.module.url(forResource: fileName, withExtension: "wasm")!
-        let filePath = fileURL.path
-        let decoder = try WasmDecoder(filePath: filePath)
+        let decoder = try WasmDecoder(filePath: path(for: fileName))
         let wasm = try decoder.invoke()
 
         let encoder = WasmEncoder(wasm: wasm)
@@ -142,9 +122,7 @@ final class WasmEncoderTests: XCTestCase {
 
     func testEncodeImportFunction() throws {
         let fileName = "import_function"
-        let fileURL = Bundle.module.url(forResource: fileName, withExtension: "wasm")!
-        let filePath = fileURL.path
-        let decoder = try WasmDecoder(filePath: filePath)
+        let decoder = try WasmDecoder(filePath: path(for: fileName))
         let wasm = try decoder.invoke()
 
         let encoder = WasmEncoder(wasm: wasm)
@@ -155,9 +133,7 @@ final class WasmEncoderTests: XCTestCase {
 
     func testEncodeIsPrime() throws {
         let fileName = "is_prime"
-        let fileURL = Bundle.module.url(forResource: fileName, withExtension: "wasm")!
-        let filePath = fileURL.path
-        let decoder = try WasmDecoder(filePath: filePath)
+        let decoder = try WasmDecoder(filePath: path(for: fileName))
         let wasm = try decoder.invoke()
 
         let encoder = WasmEncoder(wasm: wasm)
@@ -168,6 +144,11 @@ final class WasmEncoderTests: XCTestCase {
 }
 
 private extension WasmEncoderTests {
+    func path(for fileName: String) -> String {
+        let fileURL = Bundle.module.url(forResource: fileName, withExtension: "wasm")!
+        return fileURL.path
+    }
+
     func decodeWasm(fileName: String) -> Data {
         let fileURL = Bundle.module.url(forResource: fileName, withExtension: "wasm")!
         let filePath = fileURL.path
