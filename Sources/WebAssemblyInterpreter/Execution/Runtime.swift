@@ -46,20 +46,19 @@ public extension Runtime {
                             locals: code.locals,
                             instructions: code.expression.instructions)
         }
-        let functions: [FunctionAddress: FunctionInstance] = Dictionary(uniqueKeysWithValues: _functions.enumerated().map { index, function in
-            (index, .init(functionType: function.type,
-                                         code: .module(module: module,
-                                                       code: function)))
-        })
-
-        // TODO: Support global.expression
-        let globals: [GlobalAddress: GlobalInstance] = Dictionary(uniqueKeysWithValues: module.globalSection?.globals.elements.enumerated().map { index, global in
-            (index, .init(type: global.type,
-                                       value: .init(type: global.type.valueType)))
-        } ?? [])
+        let functions: [FunctionInstance] = _functions.map { function in
+                .init(functionType: function.type,
+                      code: .module(module: module,
+                                    code: function))
+        }
         
-        store.merge(functions: functions,
-                    globals: globals)
+        // TODO: Support global.expression
+        let globals: [GlobalInstance] = module.globalSection?.globals.elements.map { global in
+                .init(type: global.type,
+                      value: .init(type: global.type.valueType))
+        } ?? []
+        self.store = Store(functions: functions,
+                           globals: globals)
         
         return .init(exports: exportInstances)
     }
@@ -117,7 +116,7 @@ private extension Runtime {
             fatalError()
         }
         
-        let function = store.getFunction(index: functionAddress)
+        let function = store.getFunction(at: functionAddress)
         var locals: [Value] = []
         function.type.resultType1.valueTypes.elements
             .reversed()
@@ -262,14 +261,14 @@ private extension Runtime {
             }
         case let .globalGet(globalIndex):
             // TODO: Should get global address from current frame
-            let value = store.getGlobal(index: GlobalAddress(globalIndex))
+            let value = store.getGlobal(at: GlobalAddress(globalIndex))
             stack.push(value: value)
         case let .globalSet(globalIndex):
             // TODO: Should get global address from current frame
             guard let value = stack.popValue() else {
                 throw RuntimeError.invalidValueType
             }
-            store.setGlobal(index: GlobalAddress(globalIndex), value: value)
+            store.setGlobal(at: GlobalAddress(globalIndex), value: value)
         case .f32Add:
             fatalError()
         case let .i32Const(value):
