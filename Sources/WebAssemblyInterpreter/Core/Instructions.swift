@@ -142,32 +142,3 @@ extension Instruction {
         }
     }
 }
-
-// https://webassembly.github.io/spec/core/binary/instructions.html#binary-blocktype
-enum BlockType {
-    case empty
-    case value(ValueType)
-    // TODO: Support type index
-    //    case typeIndex
-}
-    
-extension BlockType {
-    static var emptyByte: Byte = 0x40
-}
-    
-
-// https://webassembly.github.io/spec/core/binary/instructions.html#expressions
-struct Expression {
-    let instructions: [Instruction]
-}
-
-extension Expression: CustomDebugStringConvertible {
-    var debugDescription: String {
-        [
-            "[Expression] Instruction count: \(instructions.count)",
-            instructions
-                .map { "\($0)" }
-                .joined(separator: ", ")
-        ].joined(separator: ", ")
-    }
-}

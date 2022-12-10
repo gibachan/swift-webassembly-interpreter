@@ -9,24 +9,24 @@ import Foundation
 
 // https://webassembly.github.io/spec/core/exec/runtime.html#stack
 
-enum StackElement {
-    case frame(Frame)
-    case label(Label)
+enum StackEntry {
     case value(Value)
+    case label(Label)
+    case activation(Frame)
 }
 
 final class Stack {
-    private var elements: [StackElement] = []
+    private var elements: [StackEntry] = []
     private var labelPositions: [Int] = []
     
     var currentFrame: Frame? {
         let element = elements.last { element in
             switch element {
-            case .frame: return true
+            case .activation: return true
             case .value, .label: return false
             }
         }
-        if case let .frame(frame) = element {
+        if case let .activation(frame) = element {
             return frame
         } else {
             return nil
@@ -37,7 +37,7 @@ final class Stack {
         let element = elements.last { _element in
             switch _element {
             case .label: return true
-            case .value, .frame: return false
+            case .value, .activation: return false
             }
         }
         if case .label(let label) = element {
@@ -49,7 +49,7 @@ final class Stack {
     func popCurrentFrame() {
         guard let frameIndex = elements.lastIndex(where: { element in
             switch element {
-            case .frame:
+            case .activation:
                 return true
             case .value, .label:
                 return false
@@ -66,7 +66,7 @@ final class Stack {
             switch element {
             case .label:
                 return true
-            case .value, .frame:
+            case .value, .activation:
                 return false
             }
         }) else {
@@ -81,7 +81,7 @@ final class Stack {
     }
     
     func push(frame: Frame) {
-        elements.append(.frame(frame))
+        elements.append(.activation(frame))
     }
     
     func push(label: Label) {
@@ -107,7 +107,7 @@ final class Stack {
         return nil
     }
     
-    func peek() -> StackElement? {
+    func peek() -> StackEntry? {
         elements.last
     }
     
@@ -124,7 +124,7 @@ final class Stack {
                         targetIndex = currentIndex
                     }
                     labelCounter += 1
-                case .frame, .value:
+                case .activation, .value:
                     break
                 }
             }
@@ -144,13 +144,13 @@ final class Stack {
                         targetIndex = currentIndex
                     }
                     labelCounter += 1
-                case .frame, .value:
+                case .activation, .value:
                     break
                 }
             }
         let element = elements[targetIndex]
         switch element {
-        case .frame, .value:
+        case .activation, .value:
             fatalError()
         case let .label(label):
             return label

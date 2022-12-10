@@ -7,8 +7,9 @@
 
 import Foundation
 
+// https://webassembly.github.io/spec/core/exec/runtime.html#activations-and-frames
 final class Frame {
-    let id = UUID().uuidString
+    let id = UUID().uuidString // for debug purpose
     let module: ModuleInstance
     let function: Function
     var locals: [Value]
@@ -21,6 +22,11 @@ final class Frame {
         self.function = function
         self.locals = locals
     }
+}
+
+extension Frame {
+    // FIXME: Return appropriate value
+    var arity: Int { 0 }
 }
 
 extension Frame: CustomDebugStringConvertible {

@@ -9,6 +9,13 @@ import Foundation
 
 // https://webassembly.github.io/spec/core/exec/runtime.html#module-instances
 public final class ModuleInstance {
+//    let types: [FunctionType]
+//    let functionAddresses: [FunctionAddress]
+//    let tableAddresses: [TableAddress]
+//    let memoryAddresses: [MemoryAddress]
+//    let globalAddresses: [GlobalAddress]
+//    let elementAddresses: [ElementAddress]
+//    let dataAddresses: [DataAddress]
     let exports: [ExportInstance]
     
     init(exports: [ExportInstance]) {
@@ -27,10 +34,17 @@ public final class FunctionInstance {
     }
     
     enum Code {
-        case module(module: Module, code: Function)
+        case module(module: ModuleInstance, code: Function)
+        // A host function is a function expressed outside WebAssembly but passed to a module as an import.
 //        case host(hostCode: HostFunction)
     }
 }
+
+// https://webassembly.github.io/spec/core/exec/runtime.html#table-instances
+public final class TableInstance {} // TODO: implement
+
+// https://webassembly.github.io/spec/core/exec/runtime.html#memory-instances
+public final class MemoryInstance {} // TODO: implement
 
 // https://webassembly.github.io/spec/core/exec/runtime.html#global-instances
 public final class GlobalInstance {
@@ -42,6 +56,12 @@ public final class GlobalInstance {
         self.value = value
     }
 }
+
+// https://webassembly.github.io/spec/core/exec/runtime.html#element-instances
+public final class ElementInstance {} // TODO: implement
+
+// https://webassembly.github.io/spec/core/exec/runtime.html#data-instances
+public final class DataInstance {} // TODO: implement
 
 // https://webassembly.github.io/spec/core/exec/runtime.html#export-instances
 public final class ExportInstance {

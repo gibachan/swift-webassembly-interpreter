@@ -12,6 +12,7 @@ public enum Value: Equatable {
     case i32(I32)
     case i64(I64)
     case vector
+//    case reference
     
     var type: ValueType {
         switch self {

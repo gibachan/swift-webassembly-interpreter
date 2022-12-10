@@ -35,6 +35,8 @@ public extension Runtime {
             }
         }
         
+        let moduleInstance = ModuleInstance(exports: exportInstances)
+        
         // Store
         let functionTypes: [FunctionType] = module.typeSection?.functionTypes.elements.map { $0 } ?? []
         let functionTypeIndices: [TypeIndex] = module.functionSection?.indices.elements.map { $0 } ?? []
@@ -48,7 +50,7 @@ public extension Runtime {
         }
         let functions: [FunctionInstance] = _functions.map { function in
                 .init(functionType: function.type,
-                      code: .module(module: module,
+                      code: .module(module: moduleInstance,
                                     code: function))
         }
         
@@ -60,7 +62,7 @@ public extension Runtime {
         self.store = Store(functions: functions,
                            globals: globals)
         
-        return .init(exports: exportInstances)
+        return moduleInstance
     }
     
     // TODO: arguments should be ValueType
@@ -223,9 +225,6 @@ private extension Runtime {
                           pc: &pc)
             }
         case .return:
-            guard let frame = stack.currentFrame else {
-                fatalError()
-            }
             // .number(.i32) must be an arity of current frame
             guard let value = stack.pop(.number(.i32)) else {
                 fatalError("i32 values must be in the stack")
@@ -254,7 +253,7 @@ private extension Runtime {
                 throw RuntimeError.invalidValueType
             }
             switch peekedValue {
-            case .frame, .label:
+            case .activation, .label:
                 fatalError()
             case let .value(value):
                 stack.currentFrame!.locals[Int(localIndex)] = value
@@ -351,7 +350,7 @@ private extension Runtime {
                 fatalError("Current element must be current frame")
             }
             switch currentElement {
-            case let .frame(frame):
+            case let .activation(frame):
                 if frame.id != stack.currentFrame?.id {
                     fatalError("Current element must be current frame")
                 }
@@ -370,14 +369,20 @@ private extension Runtime {
     
     func executeBr(labelIndex: LabelIndex, pc: inout Int) {
         let label = stack.label(index: labelIndex)
-        var value: Value?
-        if let valueType = label.arity {
-            value = stack.pop(valueType)
+        var values: [Value] = []
+        
+        for _ in 0..<label.arity {
+            guard let value = stack.popValue() else {
+                fatalError()
+            }
+            // TODO: Check if the ordering is correct
+            values.append(value)
         }
        
         stack.popAllFromLabel(index: labelIndex)
-        if let value {
-            stack.push(value: value)
+        
+        values.forEach {
+            stack.push(value: $0)
         }
         
         if case .loop = label.block.instruction {
