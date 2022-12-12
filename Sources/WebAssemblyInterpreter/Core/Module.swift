@@ -29,36 +29,3 @@ extension Module {
         case globalidx = 0x03
     }
 }
-
-extension Module {
-    func findExportedFunction(withName name: String) -> (type: FunctionType, code: CodeSection.Code)? {
-        guard let exportSection = exportSection,
-              let export = exportSection.exports.elements.first(where: { $0.name == name }) else {
-            return nil
-        }
-        
-        let functionIndex: FunctionIndex
-        switch export.descriptor {
-        case let .function(index):
-            functionIndex = index
-        case .table, .memory, .global:
-            return nil
-        }
-        
-        guard let typeSection = typeSection,
-              functionIndex <= typeSection.functionTypes.length - 1 else {
-            return nil
-        }
-        
-        let functionTable = zip(functionSection?.indices.elements ?? [], codeSection?.codes.elements ?? [])
-            .map { functionIndex, code in
-                return (functionIndex, code)
-            }
-
-        guard let code = functionTable.first(where: { $0.0 == functionIndex })?.1 else {
-            return nil
-        }
-        
-        return (type: typeSection.functionTypes.elements[Int(functionIndex)], code: code)
-    }
-}
