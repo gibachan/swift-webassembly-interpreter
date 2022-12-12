@@ -554,8 +554,8 @@ private extension WasmDecoder {
         let resultType1 = try decodeResultType()
         let resultType2 = try decodeResultType()
 
-        return FunctionType(resultType1: resultType1,
-                            resultType2: resultType2)
+        return FunctionType(parameterTypes: resultType1,
+                            resultTypes: resultType2)
     }
     
     func decodeResultType() throws -> ResultType {

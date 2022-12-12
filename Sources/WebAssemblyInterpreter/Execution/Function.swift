@@ -12,7 +12,7 @@ struct Function {
     let type: FunctionType
     let index: TypeIndex
     let locals: [ValueType]
-    let instructions: [Instruction]
+    let body: Expression
 }
 
 extension Function {
@@ -29,7 +29,7 @@ extension Function {
         var blockStack: [Block] = []
         
         let resultBlockType: BlockType
-        if let resultType = type.resultType2.valueTypes.elements.first {
+        if let resultType = type.resultTypes.valueTypes.elements.first {
             resultBlockType = .value(resultType)
         } else {
             resultBlockType = .empty
@@ -40,8 +40,8 @@ extension Function {
                                 startIndex: 0,
                                 endIndex: nil))
         
-        for i in 0..<instructions.count {
-            let instruction = instructions[i]
+        for i in 0..<body.instructions.count {
+            let instruction = body.instructions[i]
             let blockType: BlockType?
             
             switch instruction {

@@ -21,7 +21,12 @@ public final class Runtime {
 }
 
 public extension Runtime {
+    // https://webassembly.github.io/spec/core/exec/modules.html#instantiation
     func instanciate(module: Module) -> ModuleInstance {
+        // TODO: Validate the module
+        
+        // TODO: Validate provited imports match teh declared types
+        
         let exports = module.exportSection?.exports.elements ?? []
         let exportInstances = exports.compactMap { export in
             switch export.descriptor {
@@ -46,7 +51,7 @@ public extension Runtime {
             return Function(type: functionType,
                             index: funcTypeIndex,
                             locals: code.locals,
-                            instructions: code.expression.instructions)
+                            body: code.expression)
         }
         let functions: [FunctionInstance] = _functions.map { function in
                 .init(functionType: function.type,
@@ -61,6 +66,8 @@ public extension Runtime {
         } ?? []
         self.store = Store(functions: functions,
                            globals: globals)
+        
+        // TODO: Execute start function?
         
         return moduleInstance
     }
@@ -101,7 +108,7 @@ private extension Runtime {
         
         while stack.currentFrame != nil {
             let frame = stack.currentFrame!
-            let instructions = frame.function.instructions
+            let instructions = frame.function.body.instructions
             
 //            print("pc=\(frame.pc), instruction=\(instructions[frame.pc])")
 
@@ -120,7 +127,7 @@ private extension Runtime {
         
         let function = store.getFunction(at: functionAddress)
         var locals: [Value] = []
-        function.type.resultType1.valueTypes.elements
+        function.type.parameterTypes.valueTypes.elements
             .reversed()
             .forEach { valueType in
                 guard let value = stack.pop(valueType) else {
@@ -337,7 +344,7 @@ private extension Runtime {
                 return
             }
             
-            guard let resultType = stack.currentFrame?.function.type.resultType2.valueTypes.elements.first else {
+            guard let resultType = stack.currentFrame?.function.type.resultTypes.valueTypes.elements.first else {
                 fatalError()
             }
             

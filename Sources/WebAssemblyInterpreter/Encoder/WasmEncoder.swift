@@ -74,9 +74,9 @@ private extension WasmEncoder {
         section.functionTypes.elements
             .forEach { functionType in
                 bytes.append(FunctionType.id)
-                encodeResultType(functionType.resultType1)
+                encodeResultType(functionType.parameterTypes)
                     .forEach { bytes.append($0) }
-                encodeResultType(functionType.resultType2)
+                encodeResultType(functionType.resultTypes)
                     .forEach { bytes.append($0) }
             }
         return bytes

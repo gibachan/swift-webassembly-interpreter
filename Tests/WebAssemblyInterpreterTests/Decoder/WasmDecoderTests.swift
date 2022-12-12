@@ -49,8 +49,8 @@ final class WasmDecoderTests: XCTestCase {
             XCTFail("Function type is missing")
             return
         }
-        XCTAssertEqual(functionType.resultType1.valueTypes.length, 2)
-        let valueType1 = functionType.resultType1.valueTypes.elements[0]
+        XCTAssertEqual(functionType.parameterTypes.valueTypes.length, 2)
+        let valueType1 = functionType.parameterTypes.valueTypes.elements[0]
         if case .number(let type) = valueType1 {
             if case .i32 = type {
                 // OK
@@ -62,7 +62,7 @@ final class WasmDecoderTests: XCTestCase {
             XCTFail("Number type is missing")
             return
         }
-        let valueType2 = functionType.resultType1.valueTypes.elements[1]
+        let valueType2 = functionType.parameterTypes.valueTypes.elements[1]
         if case .number(let type) = valueType2 {
             if case .f32 = type {
                 // OK
@@ -74,7 +74,7 @@ final class WasmDecoderTests: XCTestCase {
             XCTFail("Number type is missing")
             return
         }
-        XCTAssertEqual(functionType.resultType2.valueTypes.length, 0)
+        XCTAssertEqual(functionType.resultTypes.valueTypes.length, 0)
     }
 
     func testDecodeFuncLocal() throws {
@@ -208,7 +208,7 @@ final class WasmDecoderTests: XCTestCase {
             XCTFail("Type section is missing")
             return
         }
-        guard let parameterTypes = typeSection.functionTypes.elements.first?.resultType1.valueTypes.elements else {
+        guard let parameterTypes = typeSection.functionTypes.elements.first?.parameterTypes.valueTypes.elements else {
             XCTFail("parameterTypes are missing")
             return
         }
@@ -237,7 +237,7 @@ final class WasmDecoderTests: XCTestCase {
             XCTFail("Number type is missing")
             return
         }
-        guard let returnTypes = typeSection.functionTypes.elements.first?.resultType2.valueTypes.elements else {
+        guard let returnTypes = typeSection.functionTypes.elements.first?.resultTypes.valueTypes.elements else {
             XCTFail("ReturnTypes are missing")
             return
         }
@@ -334,7 +334,7 @@ final class WasmDecoderTests: XCTestCase {
             XCTFail("Type section is missing")
             return
         }
-        guard let parameterTypes = typeSection.functionTypes.elements.first?.resultType1.valueTypes.elements else {
+        guard let parameterTypes = typeSection.functionTypes.elements.first?.parameterTypes.valueTypes.elements else {
             XCTFail("parameterTypes are missing")
             return
         }
@@ -363,7 +363,7 @@ final class WasmDecoderTests: XCTestCase {
             XCTFail("Number type is missing")
             return
         }
-        guard let returnTypes = typeSection.functionTypes.elements.first?.resultType2.valueTypes.elements else {
+        guard let returnTypes = typeSection.functionTypes.elements.first?.resultTypes.valueTypes.elements else {
             XCTFail("ReturnTypes are missing")
             return
         }

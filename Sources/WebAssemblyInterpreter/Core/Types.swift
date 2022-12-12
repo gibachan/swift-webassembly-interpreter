@@ -114,16 +114,16 @@ extension ResultType: CustomDebugStringConvertible {
 struct FunctionType {
     static let id: Byte = 0x60
     
-    let resultType1: ResultType // parameter types
-    let resultType2: ResultType // result types
+    let parameterTypes: ResultType
+    let resultTypes: ResultType
 }
 
 extension FunctionType: CustomDebugStringConvertible {
     var debugDescription: String {
         [
             "[Function Type] ID: \(Self.id)",
-            "\(resultType1)",
-            "\(resultType2)"
+            "\(parameterTypes)",
+            "\(resultTypes)"
         ].joined(separator: ", ")
     }
 }
