@@ -17,7 +17,6 @@ enum StackEntry {
 
 final class Stack {
     private var elements: [StackEntry] = []
-    private var labelPositions: [Int] = []
     
     var currentFrame: Frame? {
         let element = elements.last { element in
@@ -86,7 +85,6 @@ final class Stack {
     
     func push(label: Label) {
         elements.append(.label(label))
-        labelPositions.append(elements.count - 1)
     }
     
     func pop(_ valueType: ValueType) -> Value? {

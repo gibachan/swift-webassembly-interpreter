@@ -27,6 +27,14 @@ final class Frame {
 extension Frame {
     // FIXME: Return appropriate value
     var arity: Int { 0 }
+    
+    var currentInstruction: Instruction {
+        function.body.instructions[pc]
+    }
+    
+    var isReachedEnd: Bool {
+        pc == (function.body.instructions.count - 1)
+    }
 }
 
 extension Frame: CustomDebugStringConvertible {
