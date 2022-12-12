@@ -93,29 +93,29 @@ private extension WasmDecoder {
                 throw WasmDecodeError.illegalSection
             }
             
-            print("decoding.. \(section)")
+//            print("decoding.. \(section)")
             
             switch section {
             case .custom:
                 _ = try decodeCustomSection()
             case .type:
                 typeSection = try decodeTypeSection()
-                print(typeSection ?? "")
+//                print(typeSection ?? "")
             case .import:
                 importSection = try decodeImportSection()
-                print(importSection ?? "")
+//                print(importSection ?? "")
             case .function:
                 functionSection = try decodeFunctionSection()
-                print(functionSection ?? "")
+//                print(functionSection ?? "")
             case .global:
                 globalSection = try decodeGlobalSection()
-                print(globalSection ?? "")
+//                print(globalSection ?? "")
             case .export:
                 exportSection = try decodeExportSection()
-                print(exportSection ?? "")
+//                print(exportSection ?? "")
             case .code:
                 codeSection = try decodeCodeSection()
-                print(codeSection ?? "")
+//                print(codeSection ?? "")
             default:
                 print("Not supported section id: \(sectionID)")
                 throw WasmDecodeError.illegalSection
@@ -133,8 +133,8 @@ private extension WasmDecoder {
             throw WasmDecodeError.illegalCustomSection
         }
         
-        print("size \(size)")
-        print("current \(source.currentIndex)")
+//        print("size \(size)")
+//        print("current \(source.currentIndex)")
         
         /*
         
@@ -153,7 +153,7 @@ private extension WasmDecoder {
         source.consume(Int(size))
         let name = "temporary"
 
-        print("current \(source.currentIndex)")
+//        print("current \(source.currentIndex)")
         
         return CustomSection(sectionID: sectionID,
                              size: size,
