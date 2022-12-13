@@ -188,6 +188,18 @@ extension Runtime {
             
             let result: I32 = value1 % value2
             stack.push(value: Value(value: result))
+        case .i64Add:
+            guard let c2Value = stack.pop(.number(.i64)),
+                  let c1Value = stack.pop(.number(.i64)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i64(let value1) = c1Value,
+                  case .i64(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result: I64 = value1 + value2
+            stack.push(value: Value(value: result))
         case .end:
             if !frame.isReachedEnd {
                 stack.popCurrentLabel()

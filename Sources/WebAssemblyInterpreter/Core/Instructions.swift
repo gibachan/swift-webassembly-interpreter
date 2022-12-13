@@ -46,6 +46,8 @@ enum Instruction {
     case i32Sub
     case i32Mul
     case i32RemU
+    
+    case i64Add
 
     // Expressions
     // https://webassembly.github.io/spec/core/binary/instructions.html#expressions
@@ -90,6 +92,8 @@ extension Instruction {
         case i32Sub = 0x6B
         case i32Mul = 0x6C
         case i32RemU = 0x70
+        
+        case i64Add = 0x7C
 
         // Expressions
         // https://webassembly.github.io/spec/core/binary/instructions.html#expressions
@@ -128,6 +132,8 @@ extension Instruction {
         case .i32Sub: return .i32Sub
         case .i32Mul: return .i32Mul
         case .i32RemU: return .i32RemU
+            
+        case .i64Add: return .i64Add
             
         case .end: return .end
         }

@@ -507,6 +507,8 @@ private extension WasmDecoder {
                 instruction = .i32Mul
             case .i32RemU:
                 instruction = .i32RemU
+            case .i64Add:
+                instruction = .i64Add
             // Expressions
             case .end:
                 instruction = .end

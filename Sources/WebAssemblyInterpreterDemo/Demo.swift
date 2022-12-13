@@ -18,9 +18,9 @@ public struct Demo {
             var result: Value?
             let moduleInstance = runtime.instanciate(module: wasm.module)
             try runtime.invoke(moduleInstance: moduleInstance,
-                               functionName: "my_func", arguments: [Value.i32(10)], result: &result)
+                               functionName: "AddInt", arguments: [Value.i64(1), Value.i64(2)], result: &result)
             
-            print("[Succeeded] fib result: \(result)")
+            print("[Succeeded] fib result: \(result.debugDescription)")
         } catch {
             print("Failed to parse wasm: \(filePath)")
             print("\(error) : \(error.localizedDescription)")

@@ -45,6 +45,37 @@ final class RuntimeTests: XCTestCase {
         try runtime.invoke(moduleInstance: moduleInstance,
                            functionName: "AddInt", arguments: [.i32(100), .i32(23)], result: &result)
         XCTAssertEqual(result, .i32(123))
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "AddInt", arguments: [.i32(2147483646), .i32(1)], result: &result)
+        XCTAssertEqual(result, .i32(2147483647))
+
+        // Overflow
+//        try runtime.invoke(moduleInstance: moduleInstance,
+//                           functionName: "AddInt", arguments: [.i32(2147483646), .i32(2)], result: &result)
+//        XCTAssertEqual(result, .i32(-2147483648))
+    }
+
+    func testAddIntI64() throws {
+        let fileURL = Bundle.module.url(forResource: "func_add_int_i64", withExtension: "wasm")!
+        let filePath = fileURL.path
+        let decoder = try WasmDecoder(filePath: filePath)
+        let wasm = try decoder.invoke()
+
+        let runtime = Runtime()
+        let moduleInstance = runtime.instanciate(module: wasm.module)
+        var result: Value?
+
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "AddInt", arguments: [.i64(100), .i64(23)], result: &result)
+        XCTAssertEqual(result, .i64(123))
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "AddInt", arguments: [.i64(9223372036854775806), .i64(1)], result: &result)
+        XCTAssertEqual(result, .i64(9223372036854775807))
+
+        // Overflow
+//        try runtime.invoke(moduleInstance: moduleInstance,
+//                           functionName: "AddInt", arguments: [.i64(9223372036854775806), .i64(2)], result: &result)
+//        XCTAssertEqual(result, .i64(-9223372036854775808))
     }
 
     func testMutableGlobal() throws {

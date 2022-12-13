@@ -88,14 +88,21 @@ public extension Runtime {
             throw RuntimeError.exportedFunctionNotFound
         }
         
-        try executeFunction(moduleInstance: moduleInstance,
-                            functionAddress: functionAddress)
-        
-        guard let resultValue = stack.pop(.number(.i32)) else {
+        if functionAddress >= store.functions.count {
             fatalError()
         }
         
-        result = resultValue
+        let function = store.getFunction(at: functionAddress)
+        
+        try executeFunction(moduleInstance: moduleInstance,
+                            functionAddress: functionAddress)
+        
+        // Currently, we support only one result value
+        if let resultType = function.type.resultTypes.valueTypes.elements.first {
+            result = stack.pop(resultType)
+        } else {
+            result = .i32(0)
+        }
     }
 }
 

@@ -326,7 +326,7 @@ private extension WasmEncoder {
             case .f32Add:
                 break
             // Numeric Instruction
-            case .i64Const, .f32Const, .f64Const, .i32Eq, .i32GeU, .i32Add, .i32Sub, .i32Mul, .i32RemU:
+            case .i64Const, .f32Const, .f64Const, .i32Eq, .i32GeU, .i32Add, .i32Sub, .i32Mul, .i32RemU, .i64Add:
                 break
             // Expressions
             case .end:
