@@ -103,8 +103,8 @@ extension Runtime {
     func executeFunction(moduleInstance: ModuleInstance,
                          functionAddress: FunctionAddress) throws {
         
-        callFunction(at: functionAddress,
-                     in: moduleInstance)
+        stackActivationFrame(at: functionAddress,
+                             in: moduleInstance)
         
         while stack.currentFrame != nil {
             let frame = stack.currentFrame!
@@ -113,7 +113,7 @@ extension Runtime {
         }
     }
 
-    func callFunction(at address: FunctionAddress,
+    func stackActivationFrame(at address: FunctionAddress,
                       in module: ModuleInstance) {
         if address >= store.functions.count {
             fatalError()

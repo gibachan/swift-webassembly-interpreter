@@ -17,32 +17,27 @@ extension Runtime {
         case .nop:
             fatalError()
         case let .block(blockType):
-            guard let block = frame.function.blocks[frame.pc] else {
-                fatalError()
-            }
-            
-            frame.pc = block.startIndex
-             
-            let label = Label(blockType: blockType, block: block)
+            let endIndex = frame.function.body.findEndIndex(from: frame.pc)
+            let label = Label(blockType: blockType,
+                              startIndex: frame.pc,
+                              endIndex: endIndex,
+                              isLoop: false)
             stack.push(label: label)
+            // endIndex = 29 => 36
         case let .loop(blockType):
-            guard let block = frame.function.blocks[frame.pc] else {
-                fatalError()
-            }
-            
-            frame.pc = block.startIndex
-             
-            let label = Label(blockType: blockType, block: block)
+            let endIndex = frame.function.body.findEndIndex(from: frame.pc)
+            let label = Label(blockType: blockType,
+                              startIndex: frame.pc,
+                              endIndex: endIndex,
+                              isLoop: true)
             stack.push(label: label)
-        case .if:
+        case let .if(blockType):
             guard let value = stack.pop(.number(.i32)) else {
                 fatalError("i32 values must be in the stack")
             }
 
-            guard let block = frame.function.blocks[frame.pc] else {
-                fatalError()
-            }
-            
+            let endIndex = frame.function.body.findEndIndex(from: frame.pc)
+
             let ifValue: Bool
             switch value {
             case let .i32(value):
@@ -53,18 +48,16 @@ extension Runtime {
                 fatalError("Not implemented yet")
             }
             if ifValue {
-                frame.pc = block.endIndex! //+ 1
+                frame.pc = endIndex //+ 1
             } else {
-                frame.pc = block.startIndex
-                
                 guard let frame = stack.currentFrame else {
                     fatalError()
                 }
-                guard let block = frame.function.blocks[frame.pc] else {
-                    fatalError()
-                }
                 
-                let label = Label(blockType: block.arity, block: block)
+                let label = Label(blockType: blockType,
+                                  startIndex: frame.pc,
+                                  endIndex: endIndex,
+                                  isLoop: false)
                 stack.push(label: label)
             }
         case let .br(labelIndex):
@@ -100,8 +93,8 @@ extension Runtime {
             guard let frame = stack.currentFrame else {
                 fatalError()
             }
-            callFunction(at: FunctionAddress(functionIndex),
-                         in: frame.module)
+            stackActivationFrame(at: FunctionAddress(functionIndex),
+                                 in: frame.module)
             
         case let .localGet(localIndex):
             let value = frame.locals[Int(localIndex)]
@@ -245,10 +238,10 @@ extension Runtime {
             stack.push(value: $0)
         }
         
-        if case .loop = label.block.instruction {
-            pc = label.block.startIndex - 1
+        if label.isLoop {
+            pc = label.startIndex - 1
         } else {
-            pc = label.block.endIndex!
+            pc = label.endIndex!
         }
     }
 }

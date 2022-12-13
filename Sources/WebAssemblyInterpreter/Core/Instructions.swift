@@ -141,4 +141,11 @@ extension Instruction {
         default: return false
         }
     }
+    
+    var isEnd: Bool {
+        switch self {
+        case .end: return true
+        default: return false
+        }
+    }
 }

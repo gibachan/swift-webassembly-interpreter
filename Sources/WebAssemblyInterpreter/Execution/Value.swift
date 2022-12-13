@@ -49,6 +49,19 @@ public enum Value: Equatable {
     }
 }
 
+extension Value {
+    var defaultValue: Self {
+        switch self {
+        case .i32:
+            return .i32(0)
+        case .i64:
+            return .i64(0)
+        case .vector:
+            return .vector
+        }
+    }
+}
+
 // https://webassembly.github.io/spec/core/exec/runtime.html#results
 enum Result {
     case value(Value)

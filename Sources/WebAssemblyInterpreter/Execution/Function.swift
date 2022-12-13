@@ -15,73 +15,20 @@ struct Function {
     let body: Expression
 }
 
-extension Function {
-    struct Block {
-        let instruction: Instruction
-        let arity: BlockType
-        var startIndex: Int
-        var endIndex: Int?
-    }
-    
-    // Should be stroed variable
-    var blocks: [Int: Block] {
-        var blocks: [Int: Block] = [:] // key: startIndex
-        var blockStack: [Block] = []
-        
-        let resultBlockType: BlockType
-        if let resultType = type.resultTypes.valueTypes.elements.first {
-            resultBlockType = .value(resultType)
-        } else {
-            resultBlockType = .empty
-        }
-        
-        blockStack.append(.init(instruction: .end,
-                                arity: resultBlockType,
-                                startIndex: 0,
-                                endIndex: nil))
-        
-        for i in 0..<body.instructions.count {
-            let instruction = body.instructions[i]
-            let blockType: BlockType?
-            
-            switch instruction {
-            case .block(let _blockType), .loop(let _blockType), .if(let _blockType):
-                blockType = _blockType
-            case .end:
-                blockType = .empty
-            default:
-                blockType = nil
+extension Expression {
+    func findEndIndex(from startIndex: Int) -> Int {
+        var counter = 0
+        for i in (startIndex..<instructions.endIndex) {
+            let instruction = instructions[i]
+            if instruction.isBlock {
+                counter += 1
+            } else if instruction.isEnd {
+                counter -= 1
             }
-            
-            guard let blockType else { continue }
-            
-            if instruction.isEnd {
-                if var block = blockStack.popLast() {
-                    block.endIndex = i
-                    
-                    // update block
-                    blocks[block.startIndex] = block
-                }
-            } else {
-                let block = Block(instruction: instruction,
-                                  arity: blockType,
-                                  startIndex: i,
-                                  endIndex: nil)
-                blockStack.append(block)
+            if counter == 0 {
+                return i
             }
         }
-
-        return blocks
-    }
-}
-
-private extension Instruction {
-    var isEnd: Bool {
-        switch self {
-        case .end:
-            return true
-        default:
-            return false
-        }
+        fatalError()
     }
 }
