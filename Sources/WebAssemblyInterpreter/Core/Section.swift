@@ -214,6 +214,14 @@ extension ExportSection.Export: CustomDebugStringConvertible {
     }
 }
 
+// https://webassembly.github.io/spec/core/binary/modules.html#start-section
+struct StartSection {
+    let sectionID: Byte
+    let size: U32
+    let start: FunctionIndex
+}
+
+
 // https://webassembly.github.io/spec/core/binary/modules.html#code-section
 struct CodeSection {
     let sectionID: Byte

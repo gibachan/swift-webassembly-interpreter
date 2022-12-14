@@ -549,4 +549,17 @@ final class WasmDecoderTests: XCTestCase {
         XCTAssertEqual(`import`.module, "env")
         XCTAssertEqual(`import`.name, "imported_func")
     }
+
+    func testStart() throws {
+        let fileURL = Bundle.module.url(forResource: "start", withExtension: "wasm")!
+        let filePath = fileURL.path
+        let decoder = try WasmDecoder(filePath: filePath)
+        let wasm = try decoder.invoke()
+
+        XCTAssertNotNil(wasm.module.typeSection)
+        XCTAssertNotNil(wasm.module.functionSection)
+        XCTAssertNil(wasm.module.exportSection)
+        XCTAssertNotNil(wasm.module.startSection)
+        XCTAssertNotNil(wasm.module.codeSection)
+    }
 }

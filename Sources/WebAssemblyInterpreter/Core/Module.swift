@@ -17,6 +17,7 @@ public struct Module {
     let functionSection: FunctionSection?
     let globalSection: GlobalSection?
     let exportSection: ExportSection?
+    let startSection: StartSection?
     let codeSection: CodeSection?
 }
 

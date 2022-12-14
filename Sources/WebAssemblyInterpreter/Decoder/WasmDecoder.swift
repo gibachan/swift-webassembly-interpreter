@@ -59,6 +59,7 @@ private extension WasmDecoder {
         var functionSection: FunctionSection?
         var globalSection: GlobalSection?
         var exportSection: ExportSection?
+        var startSection: StartSection?
         var codeSection: CodeSection?
         
         try decodeSections(typeSection: &typeSection,
@@ -66,6 +67,7 @@ private extension WasmDecoder {
                            functionSection: &functionSection,
                            globalSection: &globalSection,
                            exportSection: &exportSection,
+                           startSection: &startSection,
                            codeSection: &codeSection)
         
         return Module(
@@ -74,6 +76,7 @@ private extension WasmDecoder {
             functionSection: functionSection,
             globalSection: globalSection,
             exportSection: exportSection,
+            startSection: startSection,
             codeSection: codeSection
         )
     }
@@ -86,6 +89,7 @@ private extension WasmDecoder {
                         functionSection: inout FunctionSection?,
                         globalSection: inout GlobalSection?,
                         exportSection: inout ExportSection?,
+                        startSection: inout StartSection?,
                         codeSection: inout CodeSection?) throws {
         while source.remaining > 0 {
             guard let sectionID = source.current,
@@ -113,6 +117,8 @@ private extension WasmDecoder {
             case .export:
                 exportSection = try decodeExportSection()
 //                print(exportSection ?? "")
+            case .start:
+                startSection = try decodeStartSection()
             case .code:
                 codeSection = try decodeCodeSection()
 //                print(codeSection ?? "")
@@ -364,6 +370,24 @@ private extension WasmDecoder {
         
         let export = ExportSection.Export(name: name, descriptor: descriptor)
         return export
+    }
+    
+    func decodeStartSection() throws -> StartSection {
+        guard let sectionID = source.consume() else {
+            throw WasmDecodeError.illegalStartSection
+        }
+        
+        guard let size = source.consumeU32() else {
+            throw WasmDecodeError.illegalStartSection
+        }
+        
+        guard let functionIndex = source.consumeU32() else {
+            throw WasmDecodeError.illegalCodeSection
+        }
+
+        return StartSection(sectionID: sectionID,
+                            size: size,
+                            start: functionIndex)
     }
     
     func decodeCodeSection() throws -> CodeSection {

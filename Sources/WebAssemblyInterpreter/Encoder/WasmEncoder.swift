@@ -53,6 +53,11 @@ private extension WasmEncoder {
                 bytes.append($0)
             }
         }
+        if let startSection = module.startSection {
+            encodeStartSection(startSection).forEach {
+                bytes.append($0)
+            }
+        }
         if let codeSection = module.codeSection {
             encodeCodeSection(codeSection).forEach {
                 bytes.append($0)
@@ -226,6 +231,18 @@ private extension WasmEncoder {
                     fatalError("Not implemented yet")
                 }
             }
+        return bytes
+    }
+    
+    func encodeStartSection(_ section: StartSection) -> [Byte] {
+        var bytes: [Byte] = []
+        bytes.append(section.sectionID)
+        section.size.unsignedLEB128.forEach {
+            bytes.append($0)
+        }
+        section.start.unsignedLEB128.forEach {
+            bytes.append($0)
+        }
         return bytes
     }
     

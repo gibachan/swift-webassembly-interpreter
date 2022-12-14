@@ -141,6 +141,17 @@ final class WasmEncoderTests: XCTestCase {
 
         XCTAssertEqual(encoded, decodeWasm(fileName: fileName))
     }
+
+    func testEncodeStart() throws {
+        let fileName = "start"
+        let decoder = try WasmDecoder(filePath: path(for: fileName))
+        let wasm = try decoder.invoke()
+
+        let encoder = WasmEncoder(wasm: wasm)
+        let encoded = try encoder.invoke()
+
+        XCTAssertEqual(encoded, decodeWasm(fileName: fileName))
+    }
 }
 
 private extension WasmEncoderTests {
