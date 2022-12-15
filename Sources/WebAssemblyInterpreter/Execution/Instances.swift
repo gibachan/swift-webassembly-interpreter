@@ -32,13 +32,20 @@ public final class FunctionInstance {
         self.functionType = functionType
         self.code = code
     }
-    
+
+    init(functionType: FunctionType, hostCode: @escaping HostCode) {
+        self.functionType = functionType
+        self.code = .host(hostCode: hostCode)
+    }
+
     enum Code {
         case module(module: ModuleInstance, code: Function)
         // A host function is a function expressed outside WebAssembly but passed to a module as an import.
-//        case host(hostCode: HostFunction)
+        case host(hostCode: HostCode)
     }
 }
+
+public typealias HostCode = ([Value]) -> [Value]
 
 // https://webassembly.github.io/spec/core/exec/runtime.html#table-instances
 public final class TableInstance {} // TODO: implement

@@ -207,7 +207,9 @@ extension Runtime {
             }
             
             guard let resultType = frame.function.type.resultTypes.valueTypes.elements.first else {
-                fatalError()
+                // No return value
+                stack.popCurrentFrame()
+                return
             }
             
             guard let resultValue = stack.pop(resultType) else {

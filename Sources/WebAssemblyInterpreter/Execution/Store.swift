@@ -20,12 +20,9 @@ final class Store {
 }
 
 extension Store {
-    func getFunction(at index: FunctionAddress) -> Function {
+    func getFunctionType(at index: FunctionAddress) -> FunctionType {
         let instance = functions[index]
-        switch instance.code {
-        case let .module(module: _, code: function):
-            return function
-        }
+        return instance.functionType
     }
     
     func getGlobal(at index: GlobalAddress) -> Value {

@@ -16,11 +16,21 @@ public struct Demo {
             
             let runtime = Runtime()
             var result: Value?
-            let moduleInstance = runtime.instanciate(module: wasm.module)
+            let hostCode: HostCode? = { arguments in
+                guard let argument = arguments.first else { fatalError() }
+                if case let .i32(value) = argument {
+                    print("Hello World")
+                    return [.i32(value + 1)]
+                } else {
+                    fatalError()
+                }
+            }
+            let moduleInstance = runtime.instanciate(module: wasm.module,
+                                                     hostCode: hostCode)
             try runtime.invoke(moduleInstance: moduleInstance,
-                               functionName: "AddInt", arguments: [Value.i64(1), Value.i64(2)], result: &result)
+                               functionName: "CallImportedFunction", arguments: [], result: &result)
             
-            print("[Succeeded] fib result: \(result.debugDescription)")
+            print("[Succeeded] result: \(result.debugDescription)")
         } catch {
             print("Failed to parse wasm: \(filePath)")
             print("\(error) : \(error.localizedDescription)")

@@ -547,7 +547,7 @@ final class WasmDecoderTests: XCTestCase {
         }
 
         XCTAssertEqual(`import`.module, "env")
-        XCTAssertEqual(`import`.name, "imported_func")
+        XCTAssertEqual(`import`.name, "increment")
     }
 
     func testStart() throws {

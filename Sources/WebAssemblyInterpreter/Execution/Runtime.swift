@@ -22,7 +22,9 @@ public final class Runtime {
 
 public extension Runtime {
     // https://webassembly.github.io/spec/core/exec/modules.html#instantiation
-    func instanciate(module: Module) -> ModuleInstance {
+    func instanciate(module: Module,
+                     hostCode: HostCode? = nil) -> ModuleInstance {
+        
         // TODO: Validate the module
         
         // TODO: Validate provited imports match teh declared types
@@ -53,12 +55,28 @@ public extension Runtime {
                             locals: code.locals,
                             body: code.expression)
         }
-        let functions: [FunctionInstance] = _functions.map { function in
-                .init(functionType: function.type,
-                      code: .module(module: moduleInstance,
-                                    code: function))
+        var functions: [FunctionInstance] = []
+        
+        module.importSection?.imports.elements.forEach { _import in
+            switch _import.descriptor {
+            case let .function(typeIndex):
+                let functionType = functionTypes[Int(typeIndex)]
+                guard let hostCode else { fatalError() }
+                let functionInstance = FunctionInstance(functionType: functionType,
+                                                        hostCode: hostCode)
+                functions.append(functionInstance)
+            case .global:
+                fatalError()
+            }
         }
         
+        _functions.forEach { function in
+            let functionInstance = FunctionInstance(functionType: function.type,
+                                                    code: .module(module: moduleInstance,
+                                                                  code: function))
+            functions.append(functionInstance)
+        }
+
         // TODO: Support global.expression
         let globals: [GlobalInstance] = module.globalSection?.globals.elements.map { global in
                 .init(type: global.type,
@@ -73,7 +91,9 @@ public extension Runtime {
     }
     
     func invoke(moduleInstance: ModuleInstance,
-                functionName: String, arguments: [Value], result: inout Value?) throws {
+                functionName: String,
+                arguments: [Value],
+                result: inout Value?) throws {
         self.stack = .init()
 
         arguments.forEach { argument in
@@ -92,13 +112,13 @@ public extension Runtime {
             fatalError()
         }
         
-        let function = store.getFunction(at: functionAddress)
+        let functionType = store.getFunctionType(at: functionAddress)
         
         try executeFunction(moduleInstance: moduleInstance,
                             functionAddress: functionAddress)
         
         // Currently, we support only one result value
-        if let resultType = function.type.resultTypes.valueTypes.elements.first {
+        if let resultType = functionType.resultTypes.valueTypes.elements.first {
             result = stack.pop(resultType)
         } else {
             result = .i32(0)
@@ -126,30 +146,47 @@ extension Runtime {
             fatalError()
         }
         
-        let function = store.getFunction(at: address)
-        var locals: [Value] = []
-        function.type.parameterTypes.valueTypes.elements
-            .reversed()
-            .forEach { valueType in
-                guard let value = stack.pop(valueType) else {
-                    // TODO: throw exception
-                    fatalError()
+        let functionInstance = store.functions[address]
+        let functionType = functionInstance.functionType
+        switch functionInstance.code {
+        case let .module(module, code):
+            let function: Function = code
+            var locals: [Value] = []
+            functionType.parameterTypes.valueTypes.elements
+                .reversed()
+                .forEach { valueType in
+                    guard let value = stack.pop(valueType) else {
+                        // TODO: throw exception
+                        fatalError()
+                    }
+                    switch value {
+                    case let .i32(value):
+                        locals.insert(Value(value: value), at: 0)
+                    case let .i64(value):
+                        locals.insert(Value(value: value), at: 0)
+                    case .vector:
+                        fatalError("Not implemented yet")
+                    }
                 }
-                switch value {
-                case let .i32(value):
-                    locals.insert(Value(value: value), at: 0)
-                case let .i64(value):
-                    locals.insert(Value(value: value), at: 0)
-                case .vector:
-                    fatalError("Not implemented yet")
-                }
+            function.locals.forEach { valueType in
+                locals.append(Value(type: valueType))
             }
-        function.locals.forEach { valueType in
-            locals.append(Value(type: valueType))
-        }
 
-        stack.push(frame: .init(module: module,
-                                function: function,
-                                locals: locals))
+            stack.push(frame: .init(module: module,
+                                    function: function,
+                                    locals: locals))
+        case let .host(hostCode: hostCode):
+            let arguments = functionType.parameterTypes.valueTypes.elements
+                .reversed()
+                .map { valueType in
+                    guard let value = stack.pop(valueType) else {
+                        // TODO: throw exception
+                        fatalError()
+                    }
+                    return value
+                }
+            let results = hostCode(arguments)
+            results.forEach { stack.push(value: $0) }
+        }
     }
 }

@@ -1,6 +1,14 @@
 (module
-    (import "env" "imported_func" (func $my_func(param i32)))
-    (func (export "my_func")
-        (call $my_func (i32.const 1))
+  (import "env" "increment"
+    (func $increment
+      (param $value_1 i32)
+      (result i32)
     )
+  )
+  (func (export "CallImportedFunction")
+    (result i32)
+
+    i32.const 12
+    (call $increment)
+  )
 )
