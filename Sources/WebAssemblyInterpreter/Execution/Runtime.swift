@@ -65,6 +65,8 @@ public extension Runtime {
                 let functionInstance = FunctionInstance(functionType: functionType,
                                                         hostCode: hostCode)
                 functions.append(functionInstance)
+            case .memory:
+                fatalError()
             case .global:
                 fatalError()
             }

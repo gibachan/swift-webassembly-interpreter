@@ -19,6 +19,7 @@ public struct Module {
     let exportSection: ExportSection?
     let startSection: StartSection?
     let codeSection: CodeSection?
+    let dataSection: DataSection?
 }
 
 extension Module {

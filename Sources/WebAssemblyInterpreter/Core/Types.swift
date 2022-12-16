@@ -133,10 +133,15 @@ enum Limits {
     case min(n: U32)
     case minMax(n: U32, m: U32)
     
-    var id: Byte {
+    enum LimitsType: Byte {
+    case min = 0x00
+    case minMax = 0x01
+    }
+    
+    var type: LimitsType {
         switch self {
-        case .min: return 0x00
-        case .minMax: return 0x01
+        case .min: return .min
+        case .minMax: return .minMax
         }
     }
 }

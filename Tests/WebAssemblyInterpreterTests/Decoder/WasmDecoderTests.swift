@@ -562,4 +562,28 @@ final class WasmDecoderTests: XCTestCase {
         XCTAssertNotNil(wasm.module.startSection)
         XCTAssertNotNil(wasm.module.codeSection)
     }
+
+    func testHelloWorld() throws {
+        let fileURL = Bundle.module.url(forResource: "helloworld", withExtension: "wasm")!
+        let filePath = fileURL.path
+        let decoder = try WasmDecoder(filePath: filePath)
+        let wasm = try decoder.invoke()
+
+        XCTAssertEqual(wasm.module.importSection!.imports.length, 3)
+        let import1 = wasm.module.importSection!.imports.elements[0]
+        let import2 = wasm.module.importSection!.imports.elements[1]
+        let import3 = wasm.module.importSection!.imports.elements[2]
+        XCTAssertEqual(import1.name, "print_string")
+        XCTAssertEqual(import2.name, "buffer")
+        XCTAssertEqual(import3.name, "start_string")
+
+        XCTAssertEqual(wasm.module.globalSection!.globals.length, 1)
+        let global = wasm.module.globalSection!.globals.elements[0]
+        XCTAssertEqual(global.type.valueType, .number(.i32))
+
+        XCTAssertEqual(wasm.module.dataSection!.datas.length, 1)
+        let data = wasm.module.dataSection!.datas.elements.first!
+        XCTAssertEqual(data.memoryIndex, 0)
+        XCTAssertEqual(data.initializer.length, 12)
+    }
 }

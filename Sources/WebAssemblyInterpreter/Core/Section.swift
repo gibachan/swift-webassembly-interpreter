@@ -69,18 +69,20 @@ extension ImportSection {
         // TODO: table, memory
         case function = 0x00
 //        case table = 0x01
-//        case memory = 0x02
+        case memory = 0x02
         case global = 0x03
     }
 
     enum ImportDescriptor {
         // TODO: table, memory
         case function(TypeIndex)
+        case memory(MemoryType)
         case global(GlobalType)
         
         var type: ImportDescriptorType {
             switch self {
             case .function: return .function
+            case .memory: return .memory
             case .global: return .global
             }
         }
@@ -255,6 +257,46 @@ extension CodeSection.Code: CustomDebugStringConvertible {
             "Local count: \(locals.count)",
             locals
                 .map { "\($0)" }
+                .joined(separator: ", "),
+            "\(expression)"
+        ].joined(separator: ", ")
+    }
+}
+
+// https://webassembly.github.io/spec/core/binary/modules.html#data-section
+struct DataSection {
+    let sectionID: Byte
+    let size: U32
+    let datas: Vector<Data>
+    
+    struct Data {
+        let memoryIndex: U32
+        let expression: Expression
+        let initializer: Vector<Byte>
+    }
+}
+
+extension DataSection: CustomDebugStringConvertible {
+    var debugDescription: String {
+        [
+            "[Data Section] ID: \(sectionID.hex)",
+            "Size: \(size)",
+            "Data count: \(datas.length)",
+            datas.elements
+                .map { "\($0)" }
+                .joined(separator: ", ")
+        ].joined(separator: ", ")
+    }
+}
+
+extension DataSection.Data: CustomDebugStringConvertible {
+    var debugDescription: String {
+        [
+            "[Data] MemoryIndex: \(memoryIndex)",
+            "Expression: \(expression)",
+            "initializer count: \(initializer.length)",
+            initializer.elements
+                .map { "\($0.hex)" }
                 .joined(separator: ", "),
             "\(expression)"
         ].joined(separator: ", ")

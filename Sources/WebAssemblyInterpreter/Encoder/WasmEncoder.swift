@@ -63,6 +63,11 @@ private extension WasmEncoder {
                 bytes.append($0)
             }
         }
+        if let dataSection = module.dataSection {
+            encodeDataSection(dataSection).forEach {
+                bytes.append($0)
+            }
+        }
         
         return Data(bytes)
     }
@@ -134,11 +139,14 @@ private extension WasmEncoder {
                     typeIndex.unsignedLEB128.forEach {
                         bytes.append($0)
                     }
+                case let .memory(memoryType):
+                    encodeMemoryType(memoryType).forEach {
+                        bytes.append($0)
+                    }
                 case let .global(globalType):
                     encodeGlobalType(globalType).forEach {
                         bytes.append($0)
                     }
-
                 }
             }
         return bytes
@@ -187,6 +195,25 @@ private extension WasmEncoder {
         }
         encodeExpression(global.expression).forEach {
             bytes.append($0)
+        }
+        return bytes
+    }
+    
+    func encodeMemoryType(_ memoryType: MemoryType) -> [Byte] {
+        var bytes: [Byte] = []
+        bytes.append(memoryType.type.rawValue)
+        switch memoryType {
+        case let .min(n: n):
+            n.unsignedLEB128.forEach {
+                bytes.append($0)
+            }
+        case let .minMax(n: n, m: m):
+            n.unsignedLEB128.forEach {
+                bytes.append($0)
+            }
+            m.unsignedLEB128.forEach {
+                bytes.append($0)
+            }
         }
         return bytes
     }
@@ -274,6 +301,33 @@ private extension WasmEncoder {
                     }
                 }
                 encodeExpression(code.expression).forEach {
+                    bytes.append($0)
+                }
+            }
+        return bytes
+    }
+    
+    func encodeDataSection(_ section: DataSection) -> [Byte] {
+        var bytes: [Byte] = []
+        bytes.append(section.sectionID)
+        section.size.unsignedLEB128.forEach {
+            bytes.append($0)
+        }
+        section.datas.length.unsignedLEB128.forEach {
+            bytes.append($0)
+        }
+        section.datas.elements
+            .forEach { data in
+                data.memoryIndex.unsignedLEB128.forEach {
+                    bytes.append($0)
+                }
+                encodeExpression(data.expression).forEach {
+                    bytes.append($0)
+                }
+                data.initializer.length.unsignedLEB128.forEach {
+                    bytes.append($0)
+                }
+                data.initializer.elements.forEach {
                     bytes.append($0)
                 }
             }

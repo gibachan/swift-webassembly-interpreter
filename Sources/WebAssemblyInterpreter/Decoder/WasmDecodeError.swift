@@ -27,11 +27,13 @@ public enum WasmDecodeError: Error {
     case illegalExportSection
     case illegalStartSection
     case illegalCodeSection
+    case illegalDataSection
     
     // Type
     case illegalFunctionType
     case illegalBlockType
     case illegalValueType
+    case illegalMemoryType
     
     // Global
     case illegalGlobal

@@ -61,6 +61,7 @@ private extension WasmDecoder {
         var exportSection: ExportSection?
         var startSection: StartSection?
         var codeSection: CodeSection?
+        var dataSection: DataSection?
         
         try decodeSections(typeSection: &typeSection,
                            importSection: &importSection,
@@ -68,7 +69,8 @@ private extension WasmDecoder {
                            globalSection: &globalSection,
                            exportSection: &exportSection,
                            startSection: &startSection,
-                           codeSection: &codeSection)
+                           codeSection: &codeSection,
+                           dataSection: &dataSection)
         
         return Module(
             typeSection: typeSection,
@@ -77,7 +79,8 @@ private extension WasmDecoder {
             globalSection: globalSection,
             exportSection: exportSection,
             startSection: startSection,
-            codeSection: codeSection
+            codeSection: codeSection,
+            dataSection: dataSection
         )
     }
 }
@@ -90,14 +93,15 @@ private extension WasmDecoder {
                         globalSection: inout GlobalSection?,
                         exportSection: inout ExportSection?,
                         startSection: inout StartSection?,
-                        codeSection: inout CodeSection?) throws {
+                        codeSection: inout CodeSection?,
+                        dataSection: inout DataSection?) throws {
         while source.remaining > 0 {
             guard let sectionID = source.current,
                   let section = Section(rawValue: sectionID) else {
                 throw WasmDecodeError.illegalSection
             }
             
-//            print("decoding.. \(section)")
+            print("decoding.. \(section)")
             
             switch section {
             case .custom:
@@ -122,6 +126,8 @@ private extension WasmDecoder {
             case .code:
                 codeSection = try decodeCodeSection()
 //                print(codeSection ?? "")
+            case .data:
+                dataSection = try decodeDataSection()
             default:
                 print("Not supported section id: \(sectionID)")
                 throw WasmDecodeError.illegalSection
@@ -226,6 +232,9 @@ private extension WasmDecoder {
                     throw WasmDecodeError.illegalImportSection
                 }
                 descriptor = .function(typeIndex)
+            case .memory:
+                let memoryType = try decodeMemoryType()
+                descriptor = .memory(memoryType)
             case .global:
                 let globalType = try decodeGlobalType()
                 descriptor = .global(globalType)
@@ -294,6 +303,29 @@ private extension WasmDecoder {
                                     expression: expression)
     }
     
+    func decodeMemoryType() throws -> MemoryType {
+        guard let limitsTypeValue = source.consume(),
+              let limitsType = Limits.LimitsType(rawValue: limitsTypeValue) else {
+            throw WasmDecodeError.illegalMemoryType
+        }
+        
+        switch limitsType {
+        case .min:
+            guard let n = source.consumeU32() else {
+                throw WasmDecodeError.illegalMemoryType
+            }
+            return .min(n: n)
+        case .minMax:
+            guard let n = source.consumeU32() else {
+                throw WasmDecodeError.illegalMemoryType
+            }
+            guard let m = source.consumeU32() else {
+                throw WasmDecodeError.illegalMemoryType
+            }
+            return .minMax(n: n, m: m)
+        }
+    }
+
     func decodeGlobalType() throws -> GlobalType {
         let valueType: ValueType
         do {
@@ -424,6 +456,40 @@ private extension WasmDecoder {
         return CodeSection(sectionID: sectionID,
                            size: size,
                            codes: codes)
+    }
+    
+    func decodeDataSection() throws -> DataSection {
+        guard let sectionID = source.consume() else {
+            throw WasmDecodeError.illegalDataSection
+        }
+        
+        guard let size = source.consumeU32() else {
+            throw WasmDecodeError.illegalDataSection
+        }
+        
+        let datas: Vector<DataSection.Data> = try decodeVector {
+            guard let memoryIndex = source.consumeU32() else {
+                throw WasmDecodeError.illegalDataSection
+            }
+            
+            let expression = try decodeExpression()
+            
+            let initializer: Vector<Byte> = try decodeVector {
+                guard let byte = source.consume() else {
+                    throw WasmDecodeError.illegalDataSection
+                }
+                
+                return byte
+            }
+            
+            return DataSection.Data(memoryIndex: memoryIndex,
+                                    expression: expression,
+                                    initializer: initializer)
+        }
+        
+        return DataSection(sectionID: sectionID,
+                           size: size,
+                           datas: datas)
     }
     
     func decodeExpression() throws -> Expression {
