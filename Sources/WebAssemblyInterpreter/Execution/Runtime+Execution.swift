@@ -10,6 +10,8 @@ import Foundation
 extension Runtime {
     func execute(frame: Frame) throws {
         let instruction = frame.currentInstruction
+        
+//        print("Executing... \(instruction)")
 
         switch instruction {
         case .unreachable:

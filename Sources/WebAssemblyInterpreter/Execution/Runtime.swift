@@ -56,6 +56,7 @@ public extension Runtime {
                             body: code.expression)
         }
         var functions: [FunctionInstance] = []
+        var globals: [GlobalInstance] = []
         
         module.importSection?.imports.elements.forEach { _import in
             switch _import.descriptor {
@@ -66,10 +67,14 @@ public extension Runtime {
                 let functionInstance = FunctionInstance(functionType: functionType,
                                                         hostCode: hostCode)
                 functions.append(functionInstance)
-            case .memory:
-                fatalError()
-            case .global:
-                fatalError()
+            case let .memory(memoryType):
+                hostEnvironment.initMemory(limits: memoryType)
+            case let .global(globalType):
+                guard let globalValue = hostEnvironment.findGlobal(name: _import.name),
+                      globalValue.type == globalType.valueType else { fatalError("Imported global value is not matched") }
+                let globalInstance = GlobalInstance(type: globalType,
+                                                    value: globalValue)
+                globals.append(globalInstance)
             }
         }
         
@@ -81,12 +86,16 @@ public extension Runtime {
         }
 
         // TODO: Support global.expression
-        let globals: [GlobalInstance] = module.globalSection?.globals.elements.map { global in
-                .init(type: global.type,
-                      value: .init(type: global.type.valueType))
-        } ?? []
+        module.globalSection?.globals.elements.forEach { global in
+            let globalInstance = GlobalInstance(type: global.type,
+                                                value: .init(type: global.type.valueType))
+            globals.append(globalInstance)
+        }
+
         self.store = Store(functions: functions,
                            globals: globals)
+        
+        initMemory(module: module, hostEnvironment: hostEnvironment)
         
         // TODO: Execute start function?
         
@@ -130,6 +139,16 @@ public extension Runtime {
 }
 
 extension Runtime {
+    func initMemory(module: Module, hostEnvironment: HostEnvironment) {
+        guard let dataSection = module.dataSection else { return }
+        dataSection.datas.elements.forEach { data in
+            // TODO: Execute expression
+            let stringData = Data(data.initializer.elements.map { $0 })
+            guard let string = String(data: stringData, encoding: .utf8) else { fatalError() }
+            hostEnvironment.memory.data = string
+        }
+    }
+    
     func executeFunction(moduleInstance: ModuleInstance,
                          functionAddress: FunctionAddress) throws {
         

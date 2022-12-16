@@ -101,7 +101,7 @@ private extension WasmDecoder {
                 throw WasmDecodeError.illegalSection
             }
             
-            print("decoding.. \(section)")
+//            print("decoding.. \(section)")
             
             switch section {
             case .custom:

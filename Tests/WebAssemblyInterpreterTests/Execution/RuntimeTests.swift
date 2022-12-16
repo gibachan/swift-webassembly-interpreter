@@ -157,4 +157,27 @@ final class RuntimeTests: XCTestCase {
                            functionName: "CallImportedFunction", arguments: [], result: &result)
         XCTAssertEqual(result, .i32(10))
     }
+
+    func testHelloWorld() throws {
+        let fileURL = Bundle.module.url(forResource: "helloworld", withExtension: "wasm")!
+        let filePath = fileURL.path
+        let decoder = try WasmDecoder(filePath: filePath)
+        let wasm = try decoder.invoke()
+
+        let runtime = Runtime()
+        let hostEnvironment = HostEnvironment()
+        var printStringCalled = false
+        hostEnvironment.addCode(name: "print_string") { _ in
+            printStringCalled = true
+            XCTAssertEqual(hostEnvironment.memory.data, "hello world!")
+            return []
+        }
+        hostEnvironment.addGlobal(name: "start_string", value: .i32(0))
+        let moduleInstance = runtime.instanciate(module: wasm.module, hostEnvironment: hostEnvironment)
+        var result: Value?
+
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "helloworld", arguments: [], result: &result)
+        XCTAssertTrue(printStringCalled)
+    }
 }

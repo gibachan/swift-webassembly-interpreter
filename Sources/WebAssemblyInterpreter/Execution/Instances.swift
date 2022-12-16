@@ -45,8 +45,6 @@ public final class FunctionInstance {
     }
 }
 
-public typealias HostCode = ([Value]) -> [Value]
-
 // https://webassembly.github.io/spec/core/exec/runtime.html#table-instances
 public final class TableInstance {} // TODO: implement
 

@@ -17,26 +17,15 @@ public struct Demo {
             let runtime = Runtime()
             var result: Value?
             let hostEnvironment = HostEnvironment()
-            hostEnvironment.addCode(name: "increment") { arguments in
-                guard let argument = arguments.first else { fatalError() }
-                if case let .i32(value) = argument {
-                    return [.i32(value + 1)]
-                } else {
-                    fatalError()
-                }
+            hostEnvironment.addCode(name: "print_string") { arguments in
+                print("print_string result=\(hostEnvironment.memory.data)")
+                return []
             }
-            hostEnvironment.addCode(name: "decrement") { arguments in
-                guard let argument = arguments.first else { fatalError() }
-                if case let .i32(value) = argument {
-                    return [.i32(value - 1)]
-                } else {
-                    fatalError()
-                }
-            }
+            hostEnvironment.addGlobal(name: "start_string", value: .i32(0))
             let moduleInstance = runtime.instanciate(module: wasm.module,
                                                      hostEnvironment: hostEnvironment)
             try runtime.invoke(moduleInstance: moduleInstance,
-                               functionName: "CallImportedFunction", arguments: [], result: &result)
+                               functionName: "helloworld", arguments: [], result: &result)
             
             print("[Succeeded] result: \(result.debugDescription)")
         } catch {
