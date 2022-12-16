@@ -23,7 +23,7 @@ public final class Runtime {
 public extension Runtime {
     // https://webassembly.github.io/spec/core/exec/modules.html#instantiation
     func instanciate(module: Module,
-                     hostCode: HostCode? = nil) -> ModuleInstance {
+                     hostEnvironment: HostEnvironment = .init()) -> ModuleInstance {
         
         // TODO: Validate the module
         
@@ -61,7 +61,8 @@ public extension Runtime {
             switch _import.descriptor {
             case let .function(typeIndex):
                 let functionType = functionTypes[Int(typeIndex)]
-                guard let hostCode else { fatalError() }
+                // TODO: Consider which module the code should be imported
+                guard let hostCode = hostEnvironment.findCode(name: _import.name) else { fatalError() }
                 let functionInstance = FunctionInstance(functionType: functionType,
                                                         hostCode: hostCode)
                 functions.append(functionInstance)

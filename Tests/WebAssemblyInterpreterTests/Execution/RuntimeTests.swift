@@ -125,7 +125,7 @@ final class RuntimeTests: XCTestCase {
                            functionName: "is_prime", arguments: [.i32(997)], result: &result)
         XCTAssertEqual(result, .i32(1))
     }
-    
+
     func testImportFunction() throws {
         let fileURL = Bundle.module.url(forResource: "import_function", withExtension: "wasm")!
         let filePath = fileURL.path
@@ -133,16 +133,28 @@ final class RuntimeTests: XCTestCase {
         let wasm = try decoder.invoke()
 
         let runtime = Runtime()
-        let hostCode: HostCode? = { arguments in
-            guard let argument = arguments.first else { fatalError("There must be an argument") }
-            guard case let .i32(value) = argument else { fatalError("The argument must be 32bit integer") }
-            return [.i32(value + 1)]
+        let hostEnvironment = HostEnvironment()
+        hostEnvironment.addCode(name: "increment") { arguments in
+            guard let argument = arguments.first else { fatalError() }
+            if case let .i32(value) = argument {
+                return [.i32(value + 1)]
+            } else {
+                fatalError()
+            }
         }
-        let moduleInstance = runtime.instanciate(module: wasm.module, hostCode: hostCode)
+        hostEnvironment.addCode(name: "decrement") { arguments in
+            guard let argument = arguments.first else { fatalError() }
+            if case let .i32(value) = argument {
+                return [.i32(value - 1)]
+            } else {
+                fatalError()
+            }
+        }
+        let moduleInstance = runtime.instanciate(module: wasm.module, hostEnvironment: hostEnvironment)
         var result: Value?
 
         try runtime.invoke(moduleInstance: moduleInstance,
                            functionName: "CallImportedFunction", arguments: [], result: &result)
-        XCTAssertEqual(result, .i32(13))
+        XCTAssertEqual(result, .i32(10))
     }
 }

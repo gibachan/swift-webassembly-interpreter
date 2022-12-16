@@ -539,15 +539,15 @@ final class WasmDecoderTests: XCTestCase {
             return
         }
 
-        XCTAssertEqual(importSection.imports.length, 1)
+        XCTAssertEqual(importSection.imports.length, 2)
 
-        guard let `import` = importSection.imports.elements.first else {
-            XCTFail("Import is missing")
-            return
-        }
+        let import1 = importSection.imports.elements[0]
+        let import2 = importSection.imports.elements[1]
 
-        XCTAssertEqual(`import`.module, "env")
-        XCTAssertEqual(`import`.name, "increment")
+        XCTAssertEqual(import1.module, "env")
+        XCTAssertEqual(import1.name, "increment")
+        XCTAssertEqual(import2.module, "env")
+        XCTAssertEqual(import2.name, "decrement")
     }
 
     func testStart() throws {
