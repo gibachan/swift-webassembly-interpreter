@@ -525,6 +525,8 @@ private extension WasmDecoder {
             case .if:
                 let blockType = try decodeBlockType()
                 instruction = .if(blockType)
+            case .else:
+                instruction = .else
             case .br:
                 guard let index = source.consumeU32() else {
                     throw WasmDecodeError.illegalExpression

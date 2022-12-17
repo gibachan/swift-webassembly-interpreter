@@ -38,30 +38,42 @@ extension Runtime {
                 fatalError("i32 values must be in the stack")
             }
 
+            let elseIndex = frame.function.body.findElseIndex(from: frame.pc)
             let endIndex = frame.function.body.findEndIndex(from: frame.pc)
 
             let ifValue: Bool
             switch value {
             case let .i32(value):
-                ifValue = value == 0
+                ifValue = value != 0
             case let .i64(value):
-                ifValue = value == 0
+                ifValue = value != 0
             case .vector:
                 fatalError("Not implemented yet")
             }
             if ifValue {
-                frame.pc = endIndex //+ 1
-            } else {
-                guard let frame = stack.currentFrame else {
-                    fatalError()
-                }
-                
                 let label = Label(blockType: blockType,
                                   startIndex: frame.pc,
                                   endIndex: endIndex,
                                   isLoop: false)
                 stack.push(label: label)
+            } else {
+                if let elseIndex {
+                    frame.pc = elseIndex
+                    let label = Label(blockType: blockType,
+                                      startIndex: elseIndex,
+                                      endIndex: endIndex,
+                                      isLoop: false)
+                    stack.push(label: label)
+                } else {
+                    frame.pc = endIndex //+ 1
+                }
             }
+        case .else:
+            guard let label = stack.currentLabel else {
+                fatalError()
+            }
+            stack.popCurrentLabel()
+            frame.pc = label.endIndex!
         case let .br(labelIndex):
             executeBr(labelIndex: labelIndex,
                       pc: &frame.pc)

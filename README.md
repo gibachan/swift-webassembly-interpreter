@@ -5,7 +5,23 @@ https://webassembly.github.io/spec/core/
 ## Usage
 
 ```
-$ swift run WebAssemblyInterpreterDemo ./Tests/WebAssemblyInterpreterTests/Resources/wasms/is_prime.wasm 97
-...
-97 is a prime number.
+% swift run FizzBuzz 16
+Building for debugging...
+[3/3] Linking FizzBuzz
+Build complete! (0.35s)
+1
+2
+Fizz
+4
+Buzz
+Fizz
+7
+8
+Fizz
+Buzz
+11
+Fizz
+13
+14
+FizzBuzz
 ```

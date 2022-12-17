@@ -16,7 +16,8 @@ enum Instruction {
     case nop
     case block(BlockType)
     case loop(BlockType)
-    case `if`(BlockType) // TODO: implement else instruction
+    case `if`(BlockType)
+    case `else`
     case br(LabelIndex)
     case brIf(LabelIndex)
     case `return`
@@ -63,6 +64,7 @@ extension Instruction {
         case block = 0x02
         case loop = 0x03
         case `if` = 0x04
+        case `else` = 0x05
         case br = 0x0C
         case brIf = 0x0D
         case `return` = 0x0F
@@ -107,6 +109,7 @@ extension Instruction {
         case .block: return .block
         case .loop: return .loop
         case .if: return .if
+        case .else: return .else
         case .br: return .br
         case .brIf: return .brIf
         case .return: return .return
@@ -144,6 +147,13 @@ extension Instruction {
     var isBlock: Bool {
         switch self {
         case .block, .loop, .if: return true
+        default: return false
+        }
+    }
+    
+    var isElse: Bool {
+        switch self {
+        case .else: return true
         default: return false
         }
     }

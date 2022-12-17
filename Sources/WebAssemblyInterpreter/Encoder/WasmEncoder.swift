@@ -352,6 +352,8 @@ private extension WasmEncoder {
                 encodeBlockType(blockType).forEach {
                     bytes.append($0)
                 }
+            case .else:
+                break
             case let .br(labelIndex):
                 labelIndex.unsignedLEB128.forEach {
                     bytes.append($0)

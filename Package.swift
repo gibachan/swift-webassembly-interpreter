@@ -22,6 +22,10 @@ let package = Package(
             name: "WebAssemblyInterpreterDemo",
             dependencies: ["WebAssemblyInterpreter"]
         ),
+        .executableTarget(
+            name: "FizzBuzz",
+            dependencies: ["WebAssemblyInterpreter"]
+        ),
         .target(
             name: "WebAssemblyInterpreter",
             dependencies: ["SwiftLEB128"],

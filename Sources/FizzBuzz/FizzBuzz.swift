@@ -1,20 +1,27 @@
+//
+//  FizzBuzz.swift
+//  
+//
+//  Created by Tatsuyuki Kobayashi on 2022/12/17.
+//
+
 import Foundation
 import WebAssemblyInterpreter
 
 @main
-public struct Demo {
+public struct FizzBuzz {
     public static func main() {
-        guard CommandLine.arguments.count == 3 else {
+        guard CommandLine.arguments.count == 2 else {
             print("File path is not specified.")
             return
         }
 
-        let filePath = CommandLine.arguments[1]
-        guard let inputValue = Int32(CommandLine.arguments[2]) else {
+        guard let inputValue = Int32(CommandLine.arguments[1]) else {
             print("Input value is not specified.")
             return
         }
         
+        let filePath = "./Tests/WebAssemblyInterpreterTests/Resources/wasms/fizzbuzz.wasm"
         do {
             let decoder = try WasmDecoder(filePath: filePath)
             let wasm = try decoder.invoke()
@@ -48,7 +55,7 @@ public struct Demo {
                                functionName: "fizzbuzz", arguments: [.i32(inputValue)], result: &result)
         } catch {
             print("Failed to parse wasm: \(filePath)")
-            print("\(error) : \(error.localizedDescription)")
         }
     }
 }
+

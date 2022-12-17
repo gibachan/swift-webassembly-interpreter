@@ -180,4 +180,42 @@ final class RuntimeTests: XCTestCase {
                            functionName: "helloworld", arguments: [], result: &result)
         XCTAssertTrue(printStringCalled)
     }
+
+    func testFizzBuzz() throws {
+        let fileURL = Bundle.module.url(forResource: "fizzbuzz", withExtension: "wasm")!
+        let filePath = fileURL.path
+        let decoder = try WasmDecoder(filePath: filePath)
+        let wasm = try decoder.invoke()
+
+        let runtime = Runtime()
+        let hostEnvironment = HostEnvironment()
+        var printedStrings: [String] = []
+        hostEnvironment.addCode(name: "print_value") { arguments in
+            switch arguments.first {
+            case let .i32(value):
+                printedStrings.append("\(value)")
+            default:
+                XCTFail()
+            }
+            return []
+        }
+        hostEnvironment.addCode(name: "print_fizz") { _ in
+            printedStrings.append("Fizz")
+            return []
+        }
+        hostEnvironment.addCode(name: "print_buzz") { _ in
+            printedStrings.append("Buzz")
+            return []
+        }
+        hostEnvironment.addCode(name: "print_fizzbuzz") { _ in
+            printedStrings.append("FizzBuzz")
+            return []
+        }
+        let moduleInstance = runtime.instanciate(module: wasm.module, hostEnvironment: hostEnvironment)
+        var result: Value?
+
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "fizzbuzz", arguments: [.i32(31)], result: &result)
+        XCTAssertEqual(printedStrings, ["1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz", "16", "17", "Fizz", "19", "Buzz", "Fizz", "22", "23", "Fizz", "Buzz", "26", "Fizz", "28", "29", "FizzBuzz"])
+    }
 }
