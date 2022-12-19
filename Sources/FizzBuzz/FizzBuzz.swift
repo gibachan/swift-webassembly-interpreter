@@ -38,16 +38,24 @@ public struct FizzBuzz {
                 }
                 return []
             }
-            hostEnvironment.addCode(name: "print_fizz") { _ in
-                print("Fizz")
-                return []
-            }
-            hostEnvironment.addCode(name: "print_buzz") { _ in
-                print("Buzz")
-                return []
-            }
-            hostEnvironment.addCode(name: "print_fizzbuzz") { _ in
-                print("FizzBuzz")
+            hostEnvironment.addCode(name: "print_string") { arguments in
+                let values = arguments.compactMap { argument in
+                    switch argument {
+                    case let .i32(value):
+                        return value
+                    default:
+                        return nil
+                    }
+                }
+                guard values.count == 2 else {
+                    fatalError("Unexpected error")
+                }
+                
+                let stringData = hostEnvironment.memory.data[values[1]..<(values[1] + values[0])]
+                guard let string = String(data: stringData, encoding: .utf8) else {
+                    fatalError("Unexpected error")
+                }
+                print(string)
                 return []
             }
             let moduleInstance = runtime.instanciate(module: wasm.module, hostEnvironment: hostEnvironment)

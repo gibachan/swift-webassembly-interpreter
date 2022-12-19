@@ -142,10 +142,7 @@ extension Runtime {
     func initMemory(module: Module, hostEnvironment: HostEnvironment) {
         guard let dataSection = module.dataSection else { return }
         dataSection.datas.elements.forEach { data in
-            // TODO: Execute expression
-            let stringData = Data(data.initializer.elements.map { $0 })
-            guard let string = String(data: stringData, encoding: .utf8) else { fatalError() }
-            hostEnvironment.memory.data = string
+            hostEnvironment.updateMemory(data: data)
         }
     }
     

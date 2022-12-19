@@ -167,9 +167,19 @@ final class RuntimeTests: XCTestCase {
         let runtime = Runtime()
         let hostEnvironment = HostEnvironment()
         var printStringCalled = false
-        hostEnvironment.addCode(name: "print_string") { _ in
+        hostEnvironment.addCode(name: "print_string") { arguments in
+            guard arguments.count == 1 else {
+                XCTFail()
+                return []
+            }
+            let argument = arguments[0]
+            switch argument {
+            case .i32:
+                XCTAssertEqual(hostEnvironment.memory.data.prefix("hello world!".count), "hello world!".data(using: .utf8))
+            default:
+                XCTFail()
+            }
             printStringCalled = true
-            XCTAssertEqual(hostEnvironment.memory.data, "hello world!")
             return []
         }
         hostEnvironment.addGlobal(name: "start_string", value: .i32(0))
@@ -199,16 +209,24 @@ final class RuntimeTests: XCTestCase {
             }
             return []
         }
-        hostEnvironment.addCode(name: "print_fizz") { _ in
-            printedStrings.append("Fizz")
-            return []
-        }
-        hostEnvironment.addCode(name: "print_buzz") { _ in
-            printedStrings.append("Buzz")
-            return []
-        }
-        hostEnvironment.addCode(name: "print_fizzbuzz") { _ in
-            printedStrings.append("FizzBuzz")
+        hostEnvironment.addCode(name: "print_string") { arguments in
+            let values = arguments.compactMap { argument in
+                switch argument {
+                case let .i32(value):
+                    return value
+                default:
+                    return nil
+                }
+            }
+            guard values.count == 2 else {
+                fatalError("Unexpected error")
+            }
+
+            let stringData = hostEnvironment.memory.data[values[1]..<(values[1] + values[0])]
+            guard let string = String(data: stringData, encoding: .utf8) else {
+                fatalError("Unexpected error")
+            }
+            printedStrings.append(string)
             return []
         }
         let moduleInstance = runtime.instanciate(module: wasm.module, hostEnvironment: hostEnvironment)
