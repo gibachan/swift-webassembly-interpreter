@@ -15,6 +15,7 @@ public struct Module {
     let typeSection: TypeSection?
     let importSection: ImportSection?
     let functionSection: FunctionSection?
+    let memorySection: MemorySection?
     let globalSection: GlobalSection?
     let exportSection: ExportSection?
     let startSection: StartSection?

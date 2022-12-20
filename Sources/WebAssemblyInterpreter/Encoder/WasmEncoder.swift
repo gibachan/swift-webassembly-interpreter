@@ -43,6 +43,11 @@ private extension WasmEncoder {
                 bytes.append($0)
             }
         }
+        if let memorySection = module.memorySection {
+            encodeMemorySection(memorySection).forEach {
+                bytes.append($0)
+            }
+        }
         if let globalSection = module.globalSection {
             encodeGlobalSection(globalSection).forEach {
                 bytes.append($0)
@@ -164,6 +169,24 @@ private extension WasmEncoder {
         section.indices.elements
             .forEach { index in
                 index.unsignedLEB128.forEach {
+                    bytes.append($0)
+                }
+            }
+        return bytes
+    }
+
+    func encodeMemorySection(_ section: MemorySection) -> [Byte] {
+        var bytes: [Byte] = []
+        bytes.append(section.sectionID)
+        section.size.unsignedLEB128.forEach {
+            bytes.append($0)
+        }
+        section.memoryTypes.length.unsignedLEB128.forEach {
+            bytes.append($0)
+        }
+        section.memoryTypes.elements
+            .forEach { memoryType in
+                encodeMemoryType(memoryType).forEach {
                     bytes.append($0)
                 }
             }

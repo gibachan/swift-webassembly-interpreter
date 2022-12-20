@@ -57,6 +57,7 @@ private extension WasmDecoder {
         var typeSection: TypeSection?
         var importSection: ImportSection?
         var functionSection: FunctionSection?
+        var memorySection: MemorySection?
         var globalSection: GlobalSection?
         var exportSection: ExportSection?
         var startSection: StartSection?
@@ -66,6 +67,7 @@ private extension WasmDecoder {
         try decodeSections(typeSection: &typeSection,
                            importSection: &importSection,
                            functionSection: &functionSection,
+                           memorySection: &memorySection,
                            globalSection: &globalSection,
                            exportSection: &exportSection,
                            startSection: &startSection,
@@ -76,6 +78,7 @@ private extension WasmDecoder {
             typeSection: typeSection,
             importSection: importSection,
             functionSection: functionSection,
+            memorySection: memorySection,
             globalSection: globalSection,
             exportSection: exportSection,
             startSection: startSection,
@@ -90,6 +93,7 @@ private extension WasmDecoder {
     func decodeSections(typeSection: inout TypeSection?,
                         importSection: inout ImportSection?,
                         functionSection: inout FunctionSection?,
+                        memorySection: inout MemorySection?,
                         globalSection: inout GlobalSection?,
                         exportSection: inout ExportSection?,
                         startSection: inout StartSection?,
@@ -115,6 +119,9 @@ private extension WasmDecoder {
             case .function:
                 functionSection = try decodeFunctionSection()
 //                print(functionSection ?? "")
+            case .memory:
+                memorySection = try decodeMemorySection()
+//                print(memorySection ?? "")
             case .global:
                 globalSection = try decodeGlobalSection()
 //                print(globalSection ?? "")
@@ -269,6 +276,24 @@ private extension WasmDecoder {
         return FunctionSection(sectionID: sectionID,
                            size: size,
                            indices: indices)
+    }
+    
+    func decodeMemorySection() throws -> MemorySection {
+        guard let sectionID = source.consume() else {
+            throw WasmDecodeError.illegalMemorySection
+        }
+        
+        guard let size = source.consumeU32() else {
+            throw WasmDecodeError.illegalMemorySection
+        }
+        
+        let memoryTypes: Vector<MemoryType> = try decodeVector {
+            return try decodeMemoryType()
+        }
+        
+        return MemorySection(sectionID: sectionID,
+                             size: size,
+                             memoryTypes: memoryTypes)
     }
     
     func decodeGlobalSection() throws -> GlobalSection {

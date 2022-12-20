@@ -132,6 +132,26 @@ extension FunctionSection: CustomDebugStringConvertible {
     }
 }
 
+// https://webassembly.github.io/spec/core/binary/modules.html#binary-memsec
+struct MemorySection {
+    let sectionID: Byte
+    let size: U32
+    let memoryTypes: Vector<MemoryType>
+}
+
+extension MemorySection: CustomDebugStringConvertible {
+    var debugDescription: String {
+        [
+            "[Memory Section] ID: \(sectionID.hex)",
+            "Size: \(size)",
+            "MemoryType count: \(memoryTypes.length)",
+            memoryTypes.elements
+                .map { "\($0)" }
+                .joined(separator: ", ")
+        ].joined(separator: ", ")
+    }
+}
+
 // https://webassembly.github.io/spec/core/binary/modules.html#global-section
 struct GlobalSection {
     let sectionID: Byte

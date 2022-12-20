@@ -129,7 +129,7 @@ extension FunctionType: CustomDebugStringConvertible {
 }
 
 // https://webassembly.github.io/spec/core/binary/types.html#limits
-enum Limits {
+enum Limits: Equatable {
     case min(n: U32)
     case minMax(n: U32, m: U32)
     

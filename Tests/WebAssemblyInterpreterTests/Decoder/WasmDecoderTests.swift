@@ -484,6 +484,25 @@ final class WasmDecoderTests: XCTestCase {
         }
     }
 
+    func testDecodeMemory() throws {
+        let fileURL = Bundle.module.url(forResource: "memory", withExtension: "wasm")!
+        let filePath = fileURL.path
+        let decoder = try WasmDecoder(filePath: filePath)
+        let wasm = try decoder.invoke()
+
+        guard let memorySection = wasm.module.memorySection else {
+            XCTFail("Memory section is missing")
+            return
+        }
+        XCTAssertEqual(memorySection.memoryTypes.length, 1)
+
+        guard let memoryType = memorySection.memoryTypes.elements.first else {
+            XCTFail("MemoryType is missing")
+            return
+        }
+        XCTAssertEqual(memoryType, MemoryType.min(n: 1))
+    }
+
     func testDecodeGlobal() throws {
         let fileURL = Bundle.module.url(forResource: "global", withExtension: "wasm")!
         let filePath = fileURL.path
