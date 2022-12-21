@@ -484,6 +484,25 @@ final class WasmDecoderTests: XCTestCase {
         }
     }
 
+    func testDecodeTable() throws {
+        let fileURL = Bundle.module.url(forResource: "table", withExtension: "wasm")!
+        let filePath = fileURL.path
+        let decoder = try WasmDecoder(filePath: filePath)
+        let wasm = try decoder.invoke()
+
+        guard let tableSection = wasm.module.tableSection else {
+            XCTFail("Table section is missing")
+            return
+        }
+        XCTAssertEqual(tableSection.tableTypes.length, 1)
+
+        guard let tableType = tableSection.tableTypes.elements.first else {
+            XCTFail("TableType is missing")
+            return
+        }
+        XCTAssertEqual(tableType, TableType(referenceType: .function, limits: .min(n: 0)))
+    }
+
     func testDecodeMemory() throws {
         let fileURL = Bundle.module.url(forResource: "memory", withExtension: "wasm")!
         let filePath = fileURL.path

@@ -150,7 +150,7 @@ enum Limits: Equatable {
 typealias MemoryType = Limits
 
 // https://webassembly.github.io/spec/core/binary/types.html#memory-types
-struct TableType {
+struct TableType: Equatable {
     let referenceType: ReferenceType
     let limits: Limits
 }

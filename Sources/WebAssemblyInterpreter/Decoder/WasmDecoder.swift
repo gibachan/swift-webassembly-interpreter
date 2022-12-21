@@ -57,6 +57,7 @@ private extension WasmDecoder {
         var typeSection: TypeSection?
         var importSection: ImportSection?
         var functionSection: FunctionSection?
+        var tableSection: TableSection?
         var memorySection: MemorySection?
         var globalSection: GlobalSection?
         var exportSection: ExportSection?
@@ -67,6 +68,7 @@ private extension WasmDecoder {
         try decodeSections(typeSection: &typeSection,
                            importSection: &importSection,
                            functionSection: &functionSection,
+                           tableSection: &tableSection,
                            memorySection: &memorySection,
                            globalSection: &globalSection,
                            exportSection: &exportSection,
@@ -78,6 +80,7 @@ private extension WasmDecoder {
             typeSection: typeSection,
             importSection: importSection,
             functionSection: functionSection,
+            tableSection: tableSection,
             memorySection: memorySection,
             globalSection: globalSection,
             exportSection: exportSection,
@@ -93,6 +96,7 @@ private extension WasmDecoder {
     func decodeSections(typeSection: inout TypeSection?,
                         importSection: inout ImportSection?,
                         functionSection: inout FunctionSection?,
+                        tableSection: inout TableSection?,
                         memorySection: inout MemorySection?,
                         globalSection: inout GlobalSection?,
                         exportSection: inout ExportSection?,
@@ -119,6 +123,9 @@ private extension WasmDecoder {
             case .function:
                 functionSection = try decodeFunctionSection()
 //                print(functionSection ?? "")
+            case .table:
+                tableSection = try decodeTableSection()
+//                print(tableSection ?? "")
             case .memory:
                 memorySection = try decodeMemorySection()
 //                print(memorySection ?? "")
@@ -278,6 +285,34 @@ private extension WasmDecoder {
                            indices: indices)
     }
     
+    func decodeTableSection() throws -> TableSection {
+        guard let sectionID = source.consume() else {
+            throw WasmDecodeError.illegalTableSection
+        }
+        
+        guard let size = source.consumeU32() else {
+            throw WasmDecodeError.illegalTableSection
+        }
+        
+        let tableTypes: Vector<TableType> = try decodeVector {
+            guard let byte = source.consume(),
+                  let referenceType = ReferenceType(rawValue: byte) else {
+                throw WasmDecodeError.illegalTableSection
+            }
+            do {
+                let limits = try decodeLimits()
+                return TableType(referenceType: referenceType,
+                                 limits: limits)
+            } catch {
+                throw WasmDecodeError.illegalTableSection
+            }
+        }
+        
+        return TableSection(sectionID: sectionID,
+                             size: size,
+                             tableTypes: tableTypes)
+    }
+    
     func decodeMemorySection() throws -> MemorySection {
         guard let sectionID = source.consume() else {
             throw WasmDecodeError.illegalMemorySection
@@ -328,7 +363,7 @@ private extension WasmDecoder {
                                     expression: expression)
     }
     
-    func decodeMemoryType() throws -> MemoryType {
+    func decodeLimits() throws -> Limits {
         guard let limitsTypeValue = source.consume(),
               let limitsType = Limits.LimitsType(rawValue: limitsTypeValue) else {
             throw WasmDecodeError.illegalMemoryType
@@ -349,6 +384,10 @@ private extension WasmDecoder {
             }
             return .minMax(n: n, m: m)
         }
+    }
+
+    func decodeMemoryType() throws -> MemoryType {
+        return try decodeLimits()
     }
 
     func decodeGlobalType() throws -> GlobalType {

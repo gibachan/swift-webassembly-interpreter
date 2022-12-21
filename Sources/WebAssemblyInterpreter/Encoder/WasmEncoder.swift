@@ -43,6 +43,11 @@ private extension WasmEncoder {
                 bytes.append($0)
             }
         }
+        if let tableSection = module.tableSection {
+            encodeTableSection(tableSection).forEach {
+                bytes.append($0)
+            }
+        }
         if let memorySection = module.memorySection {
             encodeMemorySection(memorySection).forEach {
                 bytes.append($0)
@@ -175,6 +180,25 @@ private extension WasmEncoder {
         return bytes
     }
 
+    func encodeTableSection(_ section: TableSection) -> [Byte] {
+        var bytes: [Byte] = []
+        bytes.append(section.sectionID)
+        section.size.unsignedLEB128.forEach {
+            bytes.append($0)
+        }
+        section.tableTypes.length.unsignedLEB128.forEach {
+            bytes.append($0)
+        }
+        section.tableTypes.elements
+            .forEach { tableType in
+                bytes.append(tableType.referenceType.rawValue)
+                encodeLimits(tableType.limits).forEach {
+                    bytes.append($0)
+                }
+            }
+        return bytes
+    }
+
     func encodeMemorySection(_ section: MemorySection) -> [Byte] {
         var bytes: [Byte] = []
         bytes.append(section.sectionID)
@@ -222,10 +246,10 @@ private extension WasmEncoder {
         return bytes
     }
     
-    func encodeMemoryType(_ memoryType: MemoryType) -> [Byte] {
+    func encodeLimits(_ limits: Limits) -> [Byte] {
         var bytes: [Byte] = []
-        bytes.append(memoryType.type.rawValue)
-        switch memoryType {
+        bytes.append(limits.type.rawValue)
+        switch limits {
         case let .min(n: n):
             n.unsignedLEB128.forEach {
                 bytes.append($0)
@@ -239,6 +263,10 @@ private extension WasmEncoder {
             }
         }
         return bytes
+    }
+
+    func encodeMemoryType(_ memoryType: MemoryType) -> [Byte] {
+        return encodeLimits(memoryType)
     }
     
     func encodeGlobalType(_ globalType: GlobalType) -> [Byte] {

@@ -132,6 +132,26 @@ extension FunctionSection: CustomDebugStringConvertible {
     }
 }
 
+// https://webassembly.github.io/spec/core/binary/modules.html#table-section
+struct TableSection {
+    let sectionID: Byte
+    let size: U32
+    let tableTypes: Vector<TableType>
+}
+
+extension TableSection: CustomDebugStringConvertible {
+    var debugDescription: String {
+        [
+            "[Teble Section] ID: \(sectionID.hex)",
+            "Size: \(size)",
+            "TableType count: \(tableTypes.length)",
+            tableTypes.elements
+                .map { "\($0)" }
+                .joined(separator: ", ")
+        ].joined(separator: ", ")
+    }
+}
+
 // https://webassembly.github.io/spec/core/binary/modules.html#binary-memsec
 struct MemorySection {
     let sectionID: Byte
