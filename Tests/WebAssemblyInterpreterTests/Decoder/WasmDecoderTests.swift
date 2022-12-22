@@ -588,7 +588,7 @@ final class WasmDecoderTests: XCTestCase {
         XCTAssertEqual(import2.name, "decrement")
     }
 
-    func testStart() throws {
+    func testStartSection() throws {
         let fileURL = Bundle.module.url(forResource: "start", withExtension: "wasm")!
         let filePath = fileURL.path
         let decoder = try WasmDecoder(filePath: filePath)
@@ -599,6 +599,29 @@ final class WasmDecoderTests: XCTestCase {
         XCTAssertNil(wasm.module.exportSection)
         XCTAssertNotNil(wasm.module.startSection)
         XCTAssertNotNil(wasm.module.codeSection)
+    }
+
+    func testDataSection() throws {
+        let fileURL = Bundle.module.url(forResource: "data", withExtension: "wasm")!
+        let filePath = fileURL.path
+        let decoder = try WasmDecoder(filePath: filePath)
+        let wasm = try decoder.invoke()
+
+        guard let dataSection = wasm.module.dataSection else {
+            XCTFail("Data section is missing")
+            return
+        }
+        XCTAssertEqual(dataSection.datas.length, 5)
+        XCTAssertEqual(dataSection.datas.elements[0].memoryIndex, 0)
+        XCTAssertEqual(dataSection.datas.elements[0].initializer.elements, [0x61])
+        XCTAssertEqual(dataSection.datas.elements[1].memoryIndex, 0)
+        XCTAssertEqual(dataSection.datas.elements[1].initializer.elements, [0x62])
+        XCTAssertEqual(dataSection.datas.elements[2].memoryIndex, 0)
+        XCTAssertEqual(dataSection.datas.elements[2].initializer.elements, [0x63, 0x64, 0x65])
+        XCTAssertEqual(dataSection.datas.elements[3].memoryIndex, 0)
+        XCTAssertEqual(dataSection.datas.elements[3].initializer.elements, [0x78])
+        XCTAssertEqual(dataSection.datas.elements[4].memoryIndex, 0)
+        XCTAssertEqual(dataSection.datas.elements[4].initializer.elements, [0x63])
     }
 
     func testHelloWorld() throws {
