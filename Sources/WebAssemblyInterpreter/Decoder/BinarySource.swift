@@ -105,7 +105,6 @@ extension BinarySource {
         }
     }
     
-    // TODO: Unit test
     @discardableResult
     func consumeU32() -> UInt32? {
         var consumedByteCount = 0
@@ -119,14 +118,13 @@ extension BinarySource {
             consumedByteCount += 1
             bytes.append(byte)
             
-            if let value = try? UInt32(unsignedLEB128: Data(bytes)) {
-                return value
+            if ((byte & 0x80) == 0) {
+                return try? UInt32(unsignedLEB128: Data(bytes))
             }
-        } while currentIndex < bytes.endIndex
+        } while currentIndex < endIndex
         return nil
     }
     
-    // TODO: Unit test
     @discardableResult
     func consumeI32() -> I32? {
         var consumedByteCount = 0
@@ -140,10 +138,10 @@ extension BinarySource {
             consumedByteCount += 1
             bytes.append(byte)
             
-            if let value = try? Int32(signedLEB128: Data(bytes)) {
-                return value
+            if ((byte & 0x80) == 0) {
+                return try? Int32(signedLEB128: Data(bytes))
             }
-        } while currentIndex < bytes.endIndex
+        } while currentIndex < endIndex
         return nil
     }
 }

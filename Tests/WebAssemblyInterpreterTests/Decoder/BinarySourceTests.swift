@@ -78,4 +78,13 @@ final class BinarySourceTests: XCTestCase {
         XCTAssertEqual(source.consume(), 0x03)
         XCTAssertNil(source.consume())
     }
+
+    func testComsumeU32() {
+        XCTAssertEqual(BinarySource(data: Data([0xE4, 0x00])).consumeU32(), 100)
+    }
+
+    func testComsumeI32() {
+        XCTAssertEqual(BinarySource(data: Data([0xE4, 0x00])).consumeI32(), 100)
+        XCTAssertEqual(BinarySource(data: Data([0x9C, 0x7F])).consumeI32(), -100)
+    }
 }
