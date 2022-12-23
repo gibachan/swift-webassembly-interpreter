@@ -263,6 +263,46 @@ struct StartSection {
     let start: FunctionIndex
 }
 
+// https://webassembly.github.io/spec/core/binary/modules.html#element-section
+struct ElementSection {
+    let sectionID: Byte
+    let size: U32
+    let elements: Vector<Element>
+    
+    // TODO: Support different types of Element
+    struct Element {
+        let index: U32
+        let expression: Expression
+        let indices: Vector<FunctionIndex>
+    }
+}
+
+extension ElementSection: CustomDebugStringConvertible {
+    var debugDescription: String {
+        [
+            "[Element Section] ID: \(sectionID.hex)",
+            "Size: \(size)",
+            "Element count: \(elements.length)",
+            elements.elements
+                .map { "\($0)" }
+                .joined(separator: ", ")
+        ].joined(separator: ", ")
+    }
+}
+
+extension ElementSection.Element: CustomDebugStringConvertible {
+    var debugDescription: String {
+        [
+            "[Element] Index: \(index)",
+            "Index count: \(indices.length)",
+            indices.elements
+                .map { "\($0)" }
+                .joined(separator: ", "),
+            "\(expression)"
+        ].joined(separator: ", ")
+    }
+}
+
 
 // https://webassembly.github.io/spec/core/binary/modules.html#code-section
 struct CodeSection {

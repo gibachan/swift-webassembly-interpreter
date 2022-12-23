@@ -62,6 +62,7 @@ private extension WasmDecoder {
         var globalSection: GlobalSection?
         var exportSection: ExportSection?
         var startSection: StartSection?
+        var elementSection: ElementSection?
         var codeSection: CodeSection?
         var dataSection: DataSection?
         
@@ -73,6 +74,7 @@ private extension WasmDecoder {
                            globalSection: &globalSection,
                            exportSection: &exportSection,
                            startSection: &startSection,
+                           elementSection: &elementSection,
                            codeSection: &codeSection,
                            dataSection: &dataSection)
         
@@ -85,6 +87,7 @@ private extension WasmDecoder {
             globalSection: globalSection,
             exportSection: exportSection,
             startSection: startSection,
+            elementSection: elementSection,
             codeSection: codeSection,
             dataSection: dataSection
         )
@@ -101,6 +104,7 @@ private extension WasmDecoder {
                         globalSection: inout GlobalSection?,
                         exportSection: inout ExportSection?,
                         startSection: inout StartSection?,
+                        elementSection: inout ElementSection?,
                         codeSection: inout CodeSection?,
                         dataSection: inout DataSection?) throws {
         while source.remaining > 0 {
@@ -137,6 +141,8 @@ private extension WasmDecoder {
 //                print(exportSection ?? "")
             case .start:
                 startSection = try decodeStartSection()
+            case .element:
+                elementSection = try decodeElementSection()
             case .code:
                 codeSection = try decodeCodeSection()
 //                print(codeSection ?? "")
@@ -485,7 +491,53 @@ private extension WasmDecoder {
                             size: size,
                             start: functionIndex)
     }
-    
+
+    func decodeElementSection() throws -> ElementSection {
+        guard let sectionID = source.consume() else {
+            throw WasmDecodeError.illegalElementSection
+        }
+        
+        guard let size = source.consumeU32() else {
+            throw WasmDecodeError.illegalElementSection
+        }
+        
+        let elements: Vector<ElementSection.Element> = try decodeVector {
+            do {
+                return try decodeElement()
+            } catch {
+                throw WasmDecodeError.illegalElementSection
+            }
+        }
+        
+        return ElementSection(sectionID: sectionID,
+                              size: size,
+                              elements: elements)
+    }
+
+    func decodeElement() throws -> ElementSection.Element {
+        guard let index = source.consumeU32() else {
+            throw WasmDecodeError.illegalElement
+        }
+        
+        let expression: Expression
+        do {
+            expression = try decodeExpression()
+        } catch {
+            throw WasmDecodeError.illegalElement
+        }
+        
+        let indices: Vector<FunctionIndex> = try decodeVector {
+            guard let index = source.consumeU32() else {
+                throw WasmDecodeError.illegalCodeSection
+            }
+            return index
+        }
+        
+        return ElementSection.Element(index: index,
+                                      expression: expression,
+                                      indices: indices)
+    }
+
     func decodeCodeSection() throws -> CodeSection {
         guard let sectionID = source.consume() else {
             throw WasmDecodeError.illegalCodeSection

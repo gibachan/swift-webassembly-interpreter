@@ -601,6 +601,15 @@ final class WasmDecoderTests: XCTestCase {
         XCTAssertNotNil(wasm.module.codeSection)
     }
 
+    func testElementSection() throws {
+        let fileURL = Bundle.module.url(forResource: "element", withExtension: "wasm")!
+        let filePath = fileURL.path
+        let decoder = try WasmDecoder(filePath: filePath)
+        let wasm = try decoder.invoke()
+
+        XCTAssertNotNil(wasm.module.elementSection)
+    }
+
     func testDataSection() throws {
         let fileURL = Bundle.module.url(forResource: "data", withExtension: "wasm")!
         let filePath = fileURL.path

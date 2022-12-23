@@ -28,6 +28,7 @@ public enum WasmDecodeError: Error {
     case illegalGlobalSection
     case illegalExportSection
     case illegalStartSection
+    case illegalElementSection
     case illegalCodeSection
     case illegalDataSection
     
@@ -49,4 +50,7 @@ public enum WasmDecodeError: Error {
     
     // Expression
     case illegalExpression
+    
+    // Element
+    case illegalElement
 }

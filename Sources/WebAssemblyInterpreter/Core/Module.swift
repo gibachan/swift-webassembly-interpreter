@@ -20,6 +20,7 @@ public struct Module {
     let globalSection: GlobalSection?
     let exportSection: ExportSection?
     let startSection: StartSection?
+    let elementSection: ElementSection?
     let codeSection: CodeSection?
     let dataSection: DataSection?
 }

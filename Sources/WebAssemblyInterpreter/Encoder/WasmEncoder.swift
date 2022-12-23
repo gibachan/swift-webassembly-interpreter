@@ -68,6 +68,11 @@ private extension WasmEncoder {
                 bytes.append($0)
             }
         }
+        if let startSection = module.elementSection {
+            encodeElementSection(startSection).forEach {
+                bytes.append($0)
+            }
+        }
         if let codeSection = module.codeSection {
             encodeCodeSection(codeSection).forEach {
                 bytes.append($0)
@@ -321,6 +326,35 @@ private extension WasmEncoder {
         section.start.unsignedLEB128.forEach {
             bytes.append($0)
         }
+        return bytes
+    }
+
+    func encodeElementSection(_ section: ElementSection) -> [Byte] {
+        var bytes: [Byte] = []
+        bytes.append(section.sectionID)
+        section.size.unsignedLEB128.forEach {
+            bytes.append($0)
+        }
+        section.elements.length.unsignedLEB128.forEach {
+            bytes.append($0)
+        }
+        section.elements.elements
+            .forEach { element in
+                element.index.unsignedLEB128.forEach {
+                    bytes.append($0)
+                }
+                encodeExpression(element.expression).forEach {
+                    bytes.append($0)
+                }
+                element.indices.length.unsignedLEB128.forEach {
+                    bytes.append($0)
+                }
+                element.indices.elements.forEach { functionIndex in
+                    functionIndex.unsignedLEB128.forEach {
+                        bytes.append($0)
+                    }
+                }
+            }
         return bytes
     }
     
