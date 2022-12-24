@@ -23,6 +23,7 @@ public struct Module {
     let elementSection: ElementSection?
     let codeSection: CodeSection?
     let dataSection: DataSection?
+    let dataCountSection: DataCountSection?
 }
 
 extension Module {

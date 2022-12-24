@@ -631,6 +631,12 @@ final class WasmDecoderTests: XCTestCase {
         XCTAssertEqual(dataSection.datas.elements[3].initializer.elements, [0x78])
         XCTAssertEqual(dataSection.datas.elements[4].memoryIndex, 0)
         XCTAssertEqual(dataSection.datas.elements[4].initializer.elements, [0x63])
+
+        guard let dataCountSection = wasm.module.dataCountSection else {
+            XCTFail("Data count section is missing")
+            return
+        }
+        XCTAssertEqual(dataCountSection.numberOfDataSegments, 5)
     }
 
     func testHelloWorld() throws {

@@ -141,6 +141,10 @@ extension Runtime {
             store.setGlobal(at: GlobalAddress(globalIndex), value: value)
         case .f32Add:
             fatalError()
+            
+        case .dataDrop:
+            fatalError()
+            
         case let .i32Const(value):
             stack.push(value: Value(value: value))
         case .i64Const:

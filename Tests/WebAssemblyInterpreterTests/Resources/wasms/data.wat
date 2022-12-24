@@ -5,4 +5,9 @@
   (data (i32.const 100) "cde")
   (data (i32.const 5) "x")
   (data (i32.const 3) "c")
+
+  (func $start
+    (data.drop 1)
+  )
+  (start $start)
 )

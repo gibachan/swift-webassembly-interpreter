@@ -31,6 +31,7 @@ public enum WasmDecodeError: Error {
     case illegalElementSection
     case illegalCodeSection
     case illegalDataSection
+    case illegalDataCountSection
     
     // Type
     case illegalFunctionType

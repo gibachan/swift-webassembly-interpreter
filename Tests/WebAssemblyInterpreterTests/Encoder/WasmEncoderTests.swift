@@ -175,6 +175,17 @@ final class WasmEncoderTests: XCTestCase {
         XCTAssertEqual(encoded, decodeWasm(fileName: fileName))
     }
 
+    func testEncodeData() throws {
+        let fileName = "data"
+        let decoder = try WasmDecoder(filePath: path(for: fileName))
+        let wasm = try decoder.invoke()
+
+        let encoder = WasmEncoder(wasm: wasm)
+        let encoded = try encoder.invoke()
+
+        XCTAssertEqual(encoded, decodeWasm(fileName: fileName))
+    }
+
     func testEncodeElement() throws {
         let fileName = "element"
         let decoder = try WasmDecoder(filePath: path(for: fileName))

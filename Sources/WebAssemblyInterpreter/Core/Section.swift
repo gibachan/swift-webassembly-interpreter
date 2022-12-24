@@ -382,3 +382,21 @@ extension DataSection.Data: CustomDebugStringConvertible {
         ].joined(separator: ", ")
     }
 }
+
+// https://webassembly.github.io/spec/core/binary/modules.html#data-count-section
+struct DataCountSection {
+    let sectionID: Byte
+    let size: U32
+    let numberOfDataSegments: U32
+}
+
+extension DataCountSection: CustomDebugStringConvertible {
+    var debugDescription: String {
+        [
+            "[Data Count Section] ID: \(sectionID.hex)",
+            "Size: \(size)",
+            "Number of data segments: \(numberOfDataSegments)"
+        ].joined(separator: ", ")
+    }
+}
+

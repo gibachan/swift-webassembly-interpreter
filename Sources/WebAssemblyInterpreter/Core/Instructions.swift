@@ -33,6 +33,10 @@ enum Instruction {
     
     case f32Add
 
+    // Memory Instructions
+    // https://webassembly.github.io/spec/core/binary/instructions.html#memory-instructions
+    case dataDrop(DataIndex)
+    
     // Numeric Instructions
     // https://webassembly.github.io/spec/core/binary/instructions.html#variable-instructions
     case i32Const(I32)
@@ -79,6 +83,10 @@ extension Instruction {
         case globalSet = 0x24
         
         case f32Add = 0x92
+        
+        // Memory Instructions
+        // https://webassembly.github.io/spec/core/binary/instructions.html#memory-instructions
+        case dataDrop = 0xFC
 
         // Numeric Instructions
         // https://webassembly.github.io/spec/core/binary/instructions.html#variable-instructions
@@ -122,6 +130,8 @@ extension Instruction {
         case .globalSet: return .globalSet
             
         case .f32Add: return .f32Add
+            
+        case .dataDrop: return .dataDrop
             
         case .i32Const: return .i32Const
         case .i64Const: return .i64Const

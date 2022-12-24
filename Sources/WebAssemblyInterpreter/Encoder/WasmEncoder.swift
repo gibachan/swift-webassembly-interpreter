@@ -68,8 +68,13 @@ private extension WasmEncoder {
                 bytes.append($0)
             }
         }
-        if let startSection = module.elementSection {
-            encodeElementSection(startSection).forEach {
+        if let elementSection = module.elementSection {
+            encodeElementSection(elementSection).forEach {
+                bytes.append($0)
+            }
+        }
+        if let dataCountSection = module.dataCountSection {
+            encodeDataCountSection(dataCountSection).forEach {
                 bytes.append($0)
             }
         }
@@ -418,6 +423,18 @@ private extension WasmEncoder {
             }
         return bytes
     }
+
+    func encodeDataCountSection(_ section: DataCountSection) -> [Byte] {
+        var bytes: [Byte] = []
+        bytes.append(section.sectionID)
+        section.size.unsignedLEB128.forEach {
+            bytes.append($0)
+        }
+        section.numberOfDataSegments.unsignedLEB128.forEach {
+            bytes.append($0)
+        }
+        return bytes
+    }
     
     func encodeExpression(_ expression: Expression) -> [Byte] {
         var bytes: [Byte] = []
@@ -483,6 +500,16 @@ private extension WasmEncoder {
             // Variable Instructions
             case .f32Add:
                 break
+                
+            // Memory Instructions
+            case let .dataDrop(dataIndex):
+                U32(9).unsignedLEB128.forEach {
+                    bytes.append($0)
+                }
+                dataIndex.unsignedLEB128.forEach {
+                    bytes.append($0)
+                }
+                
             // Numeric Instruction
             case .i64Const, .f32Const, .f64Const, .i32Eq, .i32GeU, .i32Add, .i32Sub, .i32Mul, .i32RemU, .i64Add:
                 break
