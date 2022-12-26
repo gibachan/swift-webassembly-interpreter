@@ -185,6 +185,8 @@ extension Runtime {
                         locals.insert(Value(value: value), at: 0)
                     case let .f32(value):
                         locals.insert(Value(value: value), at: 0)
+                    case let .f64(value):
+                        locals.insert(Value(value: value), at: 0)
                     case .vector:
                         fatalError("Not implemented yet")
                     }

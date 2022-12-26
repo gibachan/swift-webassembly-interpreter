@@ -92,8 +92,26 @@ final class RuntimeTests: XCTestCase {
                            functionName: "AddFloat", arguments: [.f32(1.5), .f32(2.4)], result: &result)
         XCTAssertEqual(result, .f32(3.9))
         try runtime.invoke(moduleInstance: moduleInstance,
-                           functionName: "AddFloat", arguments: [.f32(100), .f32(23)], result: &result)
-        XCTAssertEqual(result, .f32(123))
+                           functionName: "AddFloat", arguments: [.f32(Float.greatestFiniteMagnitude - 0.1), .f32(0.1)], result: &result)
+        XCTAssertEqual(result, .f32(Float.greatestFiniteMagnitude))
+    }
+
+    func testAddFloat64() throws {
+        let fileURL = Bundle.module.url(forResource: "func_add_float_f64", withExtension: "wasm")!
+        let filePath = fileURL.path
+        let decoder = try WasmDecoder(filePath: filePath)
+        let wasm = try decoder.invoke()
+
+        let runtime = Runtime()
+        let moduleInstance = runtime.instanciate(module: wasm.module)
+        var result: Value?
+
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "AddFloat64", arguments: [.f64(1.5), .f64(2.4)], result: &result)
+        XCTAssertEqual(result, .f64(3.9))
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "AddFloat64", arguments: [.f64(Double.greatestFiniteMagnitude - 0.1), .f64(0.1)], result: &result)
+        XCTAssertEqual(result, .f64(Double.greatestFiniteMagnitude))
     }
 
     func testMutableGlobal() throws {

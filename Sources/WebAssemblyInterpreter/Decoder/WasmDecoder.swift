@@ -710,7 +710,9 @@ private extension WasmDecoder {
                 instruction = .globalSet(index)
             case .f32Add:
                 instruction = .f32Add
-                
+            case .f64Add:
+                instruction = .f64Add
+
             // Memory Instructions
             case .dataDrop:
                 guard let const = source.consumeU32(),

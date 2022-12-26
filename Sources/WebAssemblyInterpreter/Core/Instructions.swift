@@ -32,6 +32,7 @@ enum Instruction {
     case globalSet(GlobalIndex)
     
     case f32Add
+    case f64Add
 
     // Memory Instructions
     // https://webassembly.github.io/spec/core/binary/instructions.html#memory-instructions
@@ -83,6 +84,7 @@ extension Instruction {
         case globalSet = 0x24
         
         case f32Add = 0x92
+        case f64Add = 0xA0
         
         // Memory Instructions
         // https://webassembly.github.io/spec/core/binary/instructions.html#memory-instructions
@@ -130,6 +132,7 @@ extension Instruction {
         case .globalSet: return .globalSet
             
         case .f32Add: return .f32Add
+        case .f64Add: return .f64Add
             
         case .dataDrop: return .dataDrop
             

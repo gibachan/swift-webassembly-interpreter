@@ -334,6 +334,22 @@ final class WasmDecoderTests: XCTestCase {
         XCTAssertEqual(export.name, "AddFloat")
     }
 
+    func testDecodeFuncAddFloat64() throws {
+        let fileURL = Bundle.module.url(forResource: "func_add_float_f64", withExtension: "wasm")!
+        let filePath = fileURL.path
+        let decoder = try WasmDecoder(filePath: filePath)
+        let wasm = try decoder.invoke()
+
+        XCTAssertNotNil(wasm.module.functionSection)
+        XCTAssertNotNil(wasm.module.exportSection)
+
+        guard let export = wasm.module.exportSection?.exports.elements.first else {
+            XCTFail("Export is missing")
+            return
+        }
+        XCTAssertEqual(export.name, "AddFloat64")
+    }
+
     func testDecodeFuncReturnSumSquared() throws {
         let fileURL = Bundle.module.url(forResource: "func_return_sum_squared", withExtension: "wasm")!
         let filePath = fileURL.path

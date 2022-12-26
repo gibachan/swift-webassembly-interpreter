@@ -498,7 +498,7 @@ private extension WasmEncoder {
             case .unreachable, .nop, .return:
                 break
             // Variable Instructions
-            case .f32Add:
+            case .f32Add, .f64Add:
                 break
                 
             // Memory Instructions
