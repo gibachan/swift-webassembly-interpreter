@@ -87,6 +87,17 @@ final class WasmEncoderTests: XCTestCase {
         XCTAssertEqual(encoded, decodeWasm(fileName: fileName))
     }
 
+    func testEncodeFuncAddFloat() throws {
+        let fileName = "func_add_float"
+        let decoder = try WasmDecoder(filePath: path(for: fileName))
+        let wasm = try decoder.invoke()
+
+        let encoder = WasmEncoder(wasm: wasm)
+        let encoded = try encoder.invoke()
+
+        XCTAssertEqual(encoded, decodeWasm(fileName: fileName))
+    }
+
     func testEncodeFuncReturnSumSquared() throws {
         let fileName = "func_return_sum_squared"
         let decoder = try WasmDecoder(filePath: path(for: fileName))

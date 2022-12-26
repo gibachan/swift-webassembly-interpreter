@@ -47,6 +47,8 @@ extension Runtime {
                 ifValue = value != 0
             case let .i64(value):
                 ifValue = value != 0
+            case let .f32(value):
+                ifValue = value != 0
             case .vector:
                 fatalError("Not implemented yet")
             }
@@ -87,6 +89,8 @@ extension Runtime {
             case let .i32(value):
                 ifValue = value != 0
             case let .i64(value):
+                ifValue = value != 0
+            case let .f32(value):
                 ifValue = value != 0
             case .vector:
                 fatalError("Not implemented yet")
@@ -140,7 +144,17 @@ extension Runtime {
             }
             store.setGlobal(at: GlobalAddress(globalIndex), value: value)
         case .f32Add:
-            fatalError()
+            guard let c2Value = stack.pop(.number(.f32)),
+                  let c1Value = stack.pop(.number(.f32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .f32(let value1) = c1Value,
+                  case .f32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result: F32 = value1 + value2
+            stack.push(value: Value(value: result))
             
         case .dataDrop:
             fatalError()

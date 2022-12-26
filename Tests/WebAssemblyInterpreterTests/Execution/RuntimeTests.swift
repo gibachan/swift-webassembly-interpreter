@@ -78,6 +78,24 @@ final class RuntimeTests: XCTestCase {
 //        XCTAssertEqual(result, .i64(-9223372036854775808))
     }
 
+    func testAddFloat() throws {
+        let fileURL = Bundle.module.url(forResource: "func_add_float", withExtension: "wasm")!
+        let filePath = fileURL.path
+        let decoder = try WasmDecoder(filePath: filePath)
+        let wasm = try decoder.invoke()
+
+        let runtime = Runtime()
+        let moduleInstance = runtime.instanciate(module: wasm.module)
+        var result: Value?
+
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "AddFloat", arguments: [.f32(1.5), .f32(2.4)], result: &result)
+        XCTAssertEqual(result, .f32(3.9))
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "AddFloat", arguments: [.f32(100), .f32(23)], result: &result)
+        XCTAssertEqual(result, .f32(123))
+    }
+
     func testMutableGlobal() throws {
         let fileURL = Bundle.module.url(forResource: "mutable_global", withExtension: "wasm")!
         let filePath = fileURL.path

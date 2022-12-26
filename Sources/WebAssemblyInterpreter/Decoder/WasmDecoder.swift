@@ -709,7 +709,7 @@ private extension WasmDecoder {
                 }
                 instruction = .globalSet(index)
             case .f32Add:
-                instruction = .end // Temporary
+                instruction = .f32Add
                 
             // Memory Instructions
             case .dataDrop:
