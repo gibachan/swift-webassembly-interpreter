@@ -311,8 +311,11 @@ private extension WasmEncoder {
                     index.unsignedLEB128.forEach {
                         bytes.append($0)
                     }
-                case .table(_):
-                    fatalError("Not implemented yet")
+                case let .table(index):
+                    bytes.append(ExportSection.ExportDescriptorType.tableIndex.rawValue)
+                    index.unsignedLEB128.forEach {
+                        bytes.append($0)
+                    }
                 case .memory(_):
                     fatalError("Not implemented yet")
                 case .global(_):
