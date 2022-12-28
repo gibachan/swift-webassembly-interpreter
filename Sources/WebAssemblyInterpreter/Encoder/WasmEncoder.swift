@@ -159,6 +159,10 @@ private extension WasmEncoder {
                     typeIndex.unsignedLEB128.forEach {
                         bytes.append($0)
                     }
+                case let.table(tableType):
+                    encodeTableType(tableType).forEach {
+                        bytes.append($0)
+                    }
                 case let .memory(memoryType):
                     encodeMemoryType(memoryType).forEach {
                         bytes.append($0)
@@ -201,8 +205,7 @@ private extension WasmEncoder {
         }
         section.tableTypes.elements
             .forEach { tableType in
-                bytes.append(tableType.referenceType.rawValue)
-                encodeLimits(tableType.limits).forEach {
+                encodeTableType(tableType).forEach {
                     bytes.append($0)
                 }
             }
@@ -271,6 +274,15 @@ private extension WasmEncoder {
             m.unsignedLEB128.forEach {
                 bytes.append($0)
             }
+        }
+        return bytes
+    }
+    
+    func encodeTableType(_ tableType: TableType) -> [Byte] {
+        var bytes: [Byte] = []
+        bytes.append(tableType.referenceType.rawValue)
+        encodeLimits(tableType.limits).forEach {
+            bytes.append($0)
         }
         return bytes
     }
@@ -471,7 +483,13 @@ private extension WasmEncoder {
                 functionIndex.unsignedLEB128.forEach {
                     bytes.append($0)
                 }
-
+            case let .callIndirect(typeIndex, tableIndex):
+                typeIndex.unsignedLEB128.forEach {
+                    bytes.append($0)
+                }
+                tableIndex.unsignedLEB128.forEach {
+                    bytes.append($0)
+                }
             case let .localGet(index):
                 index.unsignedLEB128.forEach {
                     bytes.append($0)
@@ -514,7 +532,7 @@ private extension WasmEncoder {
                 }
                 
             // Numeric Instruction
-            case .i64Const, .f32Const, .f64Const, .i32Eq, .i32GeU, .i32Add, .i32Sub, .i32Mul, .i32RemU, .i64Add:
+            case .i64Const, .f32Const, .f64Const, .i32Eq, .i32LeU, .i32GeU, .i32Add, .i32Sub, .i32Mul, .i32RemU, .i64Add:
                 break
             // Expressions
             case .end:

@@ -66,22 +66,22 @@ extension ImportSection {
     }
     
     enum ImportDescriptorType: Byte {
-        // TODO: table, memory
         case function = 0x00
-//        case table = 0x01
+        case table = 0x01
         case memory = 0x02
         case global = 0x03
     }
 
-    enum ImportDescriptor {
-        // TODO: table, memory
+    enum ImportDescriptor: Equatable {
         case function(TypeIndex)
+        case table(TableType)
         case memory(MemoryType)
         case global(GlobalType)
         
         var type: ImportDescriptorType {
             switch self {
             case .function: return .function
+            case .table: return .table
             case .memory: return .memory
             case .global: return .global
             }

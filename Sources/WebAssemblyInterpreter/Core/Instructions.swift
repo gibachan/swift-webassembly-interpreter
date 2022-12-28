@@ -22,6 +22,7 @@ enum Instruction {
     case brIf(LabelIndex)
     case `return`
     case call(FunctionIndex)
+    case callIndirect(TypeIndex, TableIndex)
 
     // Variable Instructions
     // https://webassembly.github.io/spec/core/binary/instructions.html#variable-instructions
@@ -46,6 +47,7 @@ enum Instruction {
     case f64Const
     
     case i32Eq
+    case i32LeU
     case i32GeU
     
     case i32Add
@@ -74,6 +76,7 @@ extension Instruction {
         case brIf = 0x0D
         case `return` = 0x0F
         case call = 0x10
+        case callIndirect = 0x11
         
         // Variable Instructions
         // https://webassembly.github.io/spec/core/binary/instructions.html#variable-instructions
@@ -98,6 +101,7 @@ extension Instruction {
         case f64Const = 0x44
         
         case i32Eq = 0x46
+        case i32LeU = 0x4D
         case i32GeU = 0x4F
         
         case i32Add = 0x6A
@@ -124,6 +128,7 @@ extension Instruction {
         case .brIf: return .brIf
         case .return: return .return
         case .call: return .call
+        case .callIndirect: return .callIndirect
             
         case .localGet: return .localGet
         case .localSet: return .localSet
@@ -142,6 +147,7 @@ extension Instruction {
         case .f64Const: return .f64Const
             
         case .i32Eq: return .i32Eq
+        case .i32LeU: return .i32LeU
         case .i32GeU: return .i32GeU
             
         case .i32Add: return .i32Add

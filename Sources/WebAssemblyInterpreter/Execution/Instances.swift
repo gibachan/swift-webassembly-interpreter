@@ -81,7 +81,7 @@ public final class ExportInstance {
 
 
 // https://webassembly.github.io/spec/core/exec/runtime.html#external-values
-public enum ExternalValue {
+public enum ExternalValue: Equatable {
     case function(FunctionAddress)
     case table(TableAddress)
     case memory(MemoryAddress)

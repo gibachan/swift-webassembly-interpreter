@@ -37,6 +37,7 @@ public enum WasmDecodeError: Error {
     case illegalFunctionType
     case illegalBlockType
     case illegalValueType
+    case illegalTableType
     case illegalMemoryType
     
     // Global

@@ -156,7 +156,7 @@ struct TableType: Equatable {
 }
 
 // https://webassembly.github.io/spec/core/binary/types.html#global-types
-struct GlobalType {
+struct GlobalType: Equatable {
     let valueType: ValueType
     let mutability: Mutability
     

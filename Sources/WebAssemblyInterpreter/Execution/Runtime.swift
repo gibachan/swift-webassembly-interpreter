@@ -67,6 +67,9 @@ public extension Runtime {
                 let functionInstance = FunctionInstance(functionType: functionType,
                                                         hostCode: hostCode)
                 functions.append(functionInstance)
+            case .table:
+                // TODO: Implement with tableType
+                break
             case let .memory(memoryType):
                 hostEnvironment.initMemory(limits: memoryType)
             case let .global(globalType):

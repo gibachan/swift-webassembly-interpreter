@@ -117,7 +117,9 @@ extension Runtime {
             }
             stackActivationFrame(at: FunctionAddress(functionIndex),
                                  in: frame.module)
-            
+        case .callIndirect:
+            fatalError()
+
         case let .localGet(localIndex):
             let value = frame.locals[Int(localIndex)]
             stack.push(value: value)
@@ -196,6 +198,8 @@ extension Runtime {
             
             let result: I32 = value1 == value2 ? 1 : 0
             stack.push(value: Value(value: result))
+        case .i32LeU:
+            fatalError()
         case .i32GeU:
             guard let c2Value = stack.pop(.number(.i32)),
                   let c1Value = stack.pop(.number(.i32)) else {

@@ -255,6 +255,9 @@ private extension WasmDecoder {
                     throw WasmDecodeError.illegalImportSection
                 }
                 descriptor = .function(typeIndex)
+            case .table:
+                let tableType = try decodeTableType()
+                descriptor = .table(tableType)
             case .memory:
                 let memoryType = try decodeMemoryType()
                 descriptor = .memory(memoryType)
@@ -304,22 +307,26 @@ private extension WasmDecoder {
         }
         
         let tableTypes: Vector<TableType> = try decodeVector {
-            guard let byte = source.consume(),
-                  let referenceType = ReferenceType(rawValue: byte) else {
-                throw WasmDecodeError.illegalTableSection
-            }
-            do {
-                let limits = try decodeLimits()
-                return TableType(referenceType: referenceType,
-                                 limits: limits)
-            } catch {
-                throw WasmDecodeError.illegalTableSection
-            }
+            try decodeTableType()
         }
         
         return TableSection(sectionID: sectionID,
                              size: size,
                              tableTypes: tableTypes)
+    }
+    
+    func decodeTableType() throws -> TableType {
+        guard let byte = source.consume(),
+              let referenceType = ReferenceType(rawValue: byte) else {
+            throw WasmDecodeError.illegalTableType
+        }
+        do {
+            let limits = try decodeLimits()
+            return TableType(referenceType: referenceType,
+                             limits: limits)
+        } catch {
+            throw WasmDecodeError.illegalTableType
+        }
     }
     
     func decodeMemorySection() throws -> MemorySection {
@@ -677,11 +684,19 @@ private extension WasmDecoder {
             case .return:
                 instruction = .return
             case .call:
-                guard let index = source.consumeU32() else {
+                guard let functionIndex = source.consumeU32() else {
                     throw WasmDecodeError.illegalExpression
                 }
-                instruction = .call(index)
-                
+                instruction = .call(functionIndex)
+            case .callIndirect:
+                guard let typeIndex = source.consumeU32() else {
+                    throw WasmDecodeError.illegalExpression
+                }
+                guard let tablendex = source.consumeU32() else {
+                    throw WasmDecodeError.illegalExpression
+                }
+                instruction = .callIndirect(typeIndex, tablendex)
+
             // Variable Instructions
             case .localGet:
                 guard let index = source.consumeU32() else {
@@ -740,6 +755,8 @@ private extension WasmDecoder {
                 
             case .i32Eq:
                 instruction = .i32Eq
+            case .i32LeU:
+                instruction = .i32LeU
             case .i32GeU:
                 instruction = .i32GeU
                 

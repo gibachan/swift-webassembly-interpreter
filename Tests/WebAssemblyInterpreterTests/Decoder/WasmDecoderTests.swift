@@ -535,6 +535,26 @@ final class WasmDecoderTests: XCTestCase {
         XCTAssertEqual(tableType, TableType(referenceType: .function, limits: .min(n: 0)))
     }
 
+    func testDecodeTableTest() throws {
+        let fileURL = Bundle.module.url(forResource: "table_test", withExtension: "wasm")!
+        let filePath = fileURL.path
+        let decoder = try WasmDecoder(filePath: filePath)
+        let wasm = try decoder.invoke()
+
+        guard let importSection = wasm.module.importSection else {
+            XCTFail("Import section is missing")
+            return
+        }
+        XCTAssertEqual(importSection.imports.length, 5)
+
+        guard let tableImport = importSection.imports.elements.first else {
+            XCTFail("Table import is missing")
+            return
+        }
+        XCTAssertEqual(tableImport.name, "tbl")
+        XCTAssertEqual(tableImport.descriptor, .table(.init(referenceType: .function, limits: .min(n: 4))))
+    }
+
     func testDecodeTableExport() throws {
         let fileURL = Bundle.module.url(forResource: "table_export", withExtension: "wasm")!
         let filePath = fileURL.path
