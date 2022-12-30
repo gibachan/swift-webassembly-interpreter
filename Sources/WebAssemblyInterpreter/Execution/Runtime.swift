@@ -29,20 +29,7 @@ public extension Runtime {
         
         // TODO: Validate provited imports match teh declared types
         
-        let exports = module.exportSection?.exports.elements ?? []
-        let exportInstances = exports.compactMap { export in
-            switch export.descriptor {
-            case let .function(functionIndex):
-                return ExportInstance(name: export.name,
-                                      value: .function(FunctionAddress(functionIndex)))
-                
-            case .table, .memory, .global:
-                // TODO: Return instance with these types and replace compactMap with map
-                return nil
-            }
-        }
-        
-        let moduleInstance = ModuleInstance(exports: exportInstances)
+        let moduleInstance = ModuleInstance.instantiate(module: module)
         
         // Store
         let functionTypes: [FunctionType] = module.typeSection?.functionTypes.elements.map { $0 } ?? []

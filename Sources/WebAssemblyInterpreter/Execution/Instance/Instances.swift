@@ -7,22 +7,6 @@
 
 import Foundation
 
-// https://webassembly.github.io/spec/core/exec/runtime.html#module-instances
-public final class ModuleInstance {
-//    let types: [FunctionType]
-//    let functionAddresses: [FunctionAddress]
-//    let tableAddresses: [TableAddress]
-//    let memoryAddresses: [MemoryAddress]
-//    let globalAddresses: [GlobalAddress]
-//    let elementAddresses: [ElementAddress]
-//    let dataAddresses: [DataAddress]
-    let exports: [ExportInstance]
-    
-    init(exports: [ExportInstance]) {
-        self.exports = exports
-    }
-}
-
 // https://webassembly.github.io/spec/core/exec/runtime.html#function-instances
 public final class FunctionInstance {
     let functionType: FunctionType
