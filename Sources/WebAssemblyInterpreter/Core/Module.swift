@@ -35,3 +35,44 @@ extension Module {
         case globalidx = 0x03
     }
 }
+
+// https://webassembly.github.io/spec/core/syntax/modules.html#modules
+extension Module {
+    // TODO: Implement tables, elements, datas, start
+
+    var types: [FunctionType] {
+        typeSection?.functionTypes.elements.map { $0 } ?? []
+    }
+    
+    var functions: [Function] {
+        let typeIndices = functionSection?.indices.elements.map { $0 } ?? []
+        let codes = codeSection?.codes.elements.map { $0 } ?? []
+        guard typeIndices.count == codes.count else {
+            fatalError("Type index count should match with code count")
+        }
+        
+        let functions = codes.enumerated().map { index, code in
+            Function(index: typeIndices[index],
+                     locals: code.locals,
+                     body: code.expression)
+        }
+        
+        return functions
+    }
+    
+    var memories: [MemoryType] {
+        memorySection?.memoryTypes.elements.map { $0 } ?? []
+    }
+    
+    var globals: [GlobalSection.Global] {
+        globalSection?.globals.elements.map { $0 } ?? []
+    }
+    
+    var exports: [ExportSection.Export] {
+        exportSection?.exports.elements.map { $0 } ?? []
+    }
+    
+    var imports: [ImportSection.Import] {
+        importSection?.imports.elements.map { $0 } ?? []
+    }
+}

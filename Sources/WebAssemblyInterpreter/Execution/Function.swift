@@ -9,7 +9,6 @@ import Foundation
 
 // https://webassembly.github.io/spec/core/syntax/modules.html#functions
 struct Function {
-    let type: FunctionType
     let index: TypeIndex
     let locals: [ValueType]
     let body: Expression

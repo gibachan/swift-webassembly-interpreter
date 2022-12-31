@@ -212,6 +212,7 @@ struct ExportSection {
     let size: U32
     let exports: Vector<Export>
     
+    // TODO: Extract from ExportSection
     // https://webassembly.github.io/spec/core/syntax/modules.html#syntax-export
     struct Export {
         let name: String

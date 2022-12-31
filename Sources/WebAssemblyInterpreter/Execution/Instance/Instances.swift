@@ -12,12 +12,14 @@ public final class FunctionInstance {
     let functionType: FunctionType
     let code: Code
     
-    init(functionType: FunctionType, code: Code) {
+    init(functionType: FunctionType,
+         code: Code) {
         self.functionType = functionType
         self.code = code
     }
 
-    init(functionType: FunctionType, hostCode: @escaping HostCode) {
+    init(functionType: FunctionType,
+         hostCode: @escaping HostCode) {
         self.functionType = functionType
         self.code = .host(hostCode: hostCode)
     }
@@ -33,7 +35,21 @@ public final class FunctionInstance {
 public final class TableInstance {} // TODO: implement
 
 // https://webassembly.github.io/spec/core/exec/runtime.html#memory-instances
-public final class MemoryInstance {} // TODO: implement
+public final class MemoryInstance {
+    private static let pageSize = 65536
+
+    let type: MemoryType
+    var data: [Byte]
+
+    init(type: MemoryType) {
+        self.type = type
+        self.data = Array(repeating: 0, count: Int(type.min) * MemoryInstance.pageSize)
+    }
+}
+
+extension MemoryInstance {
+    var max: U32? { type.max }
+}
 
 // https://webassembly.github.io/spec/core/exec/runtime.html#global-instances
 public final class GlobalInstance {

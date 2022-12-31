@@ -25,65 +25,8 @@ public extension Runtime {
     func instanciate(module: Module,
                      hostEnvironment: HostEnvironment = .init()) -> ModuleInstance {
         
-        // TODO: Validate the module
-        
-        // TODO: Validate provited imports match teh declared types
-        
-        let moduleInstance = ModuleInstance.instantiate(module: module)
-        
-        // Store
-        let functionTypes: [FunctionType] = module.typeSection?.functionTypes.elements.map { $0 } ?? []
-        let functionTypeIndices: [TypeIndex] = module.functionSection?.indices.elements.map { $0 } ?? []
-        let codes = module.codeSection?.codes.elements ?? []
-        let _functions = zip(functionTypeIndices, codes).map { funcTypeIndex, code in
-            let functionType = functionTypes[Int(funcTypeIndex)]
-            return Function(type: functionType,
-                            index: funcTypeIndex,
-                            locals: code.locals,
-                            body: code.expression)
-        }
-        var functions: [FunctionInstance] = []
-        var globals: [GlobalInstance] = []
-        
-        module.importSection?.imports.elements.forEach { _import in
-            switch _import.descriptor {
-            case let .function(typeIndex):
-                let functionType = functionTypes[Int(typeIndex)]
-                // TODO: Consider which module the code should be imported
-                guard let hostCode = hostEnvironment.findCode(name: _import.name) else { fatalError() }
-                let functionInstance = FunctionInstance(functionType: functionType,
-                                                        hostCode: hostCode)
-                functions.append(functionInstance)
-            case .table:
-                // TODO: Implement with tableType
-                break
-            case let .memory(memoryType):
-                hostEnvironment.initMemory(limits: memoryType)
-            case let .global(globalType):
-                guard let globalValue = hostEnvironment.findGlobal(name: _import.name),
-                      globalValue.type == globalType.valueType else { fatalError("Imported global value is not matched") }
-                let globalInstance = GlobalInstance(type: globalType,
-                                                    value: globalValue)
-                globals.append(globalInstance)
-            }
-        }
-        
-        _functions.forEach { function in
-            let functionInstance = FunctionInstance(functionType: function.type,
-                                                    code: .module(module: moduleInstance,
-                                                                  code: function))
-            functions.append(functionInstance)
-        }
-
-        // TODO: Support global.expression
-        module.globalSection?.globals.elements.forEach { global in
-            let globalInstance = GlobalInstance(type: global.type,
-                                                value: .init(type: global.type.valueType))
-            globals.append(globalInstance)
-        }
-
-        self.store = Store(functions: functions,
-                           globals: globals)
+        let moduleInstance = store.allocate(module: module,
+                                            hostEnvironment: hostEnvironment)
         
         initMemory(module: module, hostEnvironment: hostEnvironment)
         
@@ -185,7 +128,8 @@ extension Runtime {
                 locals.append(Value(type: valueType))
             }
 
-            stack.push(frame: .init(module: module,
+            stack.push(frame: .init(arity: functionType.resultTypes.valueTypes.elements.count,
+                                    module: module,
                                     function: function,
                                     locals: locals))
         case let .host(hostCode: hostCode):

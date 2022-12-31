@@ -144,6 +144,20 @@ enum Limits: Equatable {
         case .minMax: return .minMax
         }
     }
+    
+    var min: U32 {
+        switch self {
+        case let .min(n): return n
+        case let .minMax(n, _): return n
+        }
+    }
+    
+    var max: U32? {
+        switch self {
+        case .min: return nil
+        case let .minMax(_, m): return m
+        }
+    }
 }
 
 // https://webassembly.github.io/spec/core/binary/types.html#memory-types

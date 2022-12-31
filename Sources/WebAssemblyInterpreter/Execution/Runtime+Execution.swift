@@ -258,14 +258,16 @@ extension Runtime {
                 return
             }
             
-            guard let resultType = frame.function.type.resultTypes.valueTypes.elements.first else {
+            if frame.arity == 0 {
                 // No return value
                 stack.popCurrentFrame()
                 return
             }
             
-            guard let resultValue = stack.pop(resultType) else {
-                fatalError("Result value is not threre")
+            var resultValues: [Value] = []
+            for _ in 0..<frame.arity {
+                guard let value = stack.popValue() else { fatalError("Value should be popped from the stack") }
+                resultValues.append(value)
             }
             
             // Validation
@@ -279,7 +281,9 @@ extension Runtime {
                 }
                 
                 stack.popCurrentFrame()
-                stack.push(value: resultValue)
+                resultValues.forEach {
+                    stack.push(value: $0)
+                }
             case .label, .value:
                 fatalError("Current element must be current frame")
             }

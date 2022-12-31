@@ -10,14 +10,17 @@ import Foundation
 // https://webassembly.github.io/spec/core/exec/runtime.html#activations-and-frames
 final class Frame {
     let id = UUID().uuidString // for debug purpose
+    let arity: Int
     let module: ModuleInstance
     let function: Function
     var locals: [Value]
     var pc: Int = 0
     
-    init(module: ModuleInstance,
+    init(arity: Int,
+         module: ModuleInstance,
          function: Function,
          locals: [Value]) {
+        self.arity = arity
         self.module = module
         self.function = function
         self.locals = locals
@@ -25,9 +28,6 @@ final class Frame {
 }
 
 extension Frame {
-    // FIXME: Return appropriate value
-    var arity: Int { 0 }
-    
     var currentInstruction: Instruction {
         function.body.instructions[pc]
     }
