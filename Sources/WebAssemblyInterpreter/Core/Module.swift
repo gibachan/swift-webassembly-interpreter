@@ -38,7 +38,7 @@ extension Module {
 
 // https://webassembly.github.io/spec/core/syntax/modules.html#modules
 extension Module {
-    // TODO: Implement tables, elements, datas, start
+    // TODO: Implement tables, elements, start
 
     var types: [FunctionType] {
         typeSection?.functionTypes.elements.map { $0 } ?? []
@@ -68,11 +68,15 @@ extension Module {
         globalSection?.globals.elements.map { $0 } ?? []
     }
     
-    var exports: [ExportSection.Export] {
-        exportSection?.exports.elements.map { $0 } ?? []
+    var datas: [DataSection.Data] {
+        dataSection?.datas.elements.map { $0 } ?? []
     }
     
     var imports: [ImportSection.Import] {
         importSection?.imports.elements.map { $0 } ?? []
+    }
+    
+    var exports: [ExportSection.Export] {
+        exportSection?.exports.elements.map { $0 } ?? []
     }
 }

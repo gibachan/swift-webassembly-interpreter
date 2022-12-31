@@ -28,7 +28,31 @@ public extension Runtime {
         let moduleInstance = store.allocate(module: module,
                                             hostEnvironment: hostEnvironment)
         
-        initMemory(module: module, hostEnvironment: hostEnvironment)
+        for data in module.datas {
+            let memoryAddress = moduleInstance.memoryAddresses[Int(data.memoryIndex)]
+            let memoryInstance = store.memories[memoryAddress]
+            guard let offset = data.expression.instructions.compactMap({ instruction in
+                switch instruction {
+                case let .globalGet(globalIndex):
+                    return Int(globalIndex)
+                case let .i32Const(value):
+                    return Int(value)
+                default:
+                    return nil
+                }
+            }).first else {
+                fatalError()
+            }
+            let end = Int(offset) + Int(data.initializer.length)
+            guard memoryInstance.data.indices.contains(offset),
+                  memoryInstance.data.indices.contains(end) else {
+                fatalError()
+            }
+            memoryInstance.data.replaceSubrange(offset ..< end, with: data.initializer.elements.map { $0 })
+            
+            // FIXME: Share memory with host
+            hostEnvironment.memory.data = Data(memoryInstance.data)
+        }
         
         // TODO: Execute start function?
         
@@ -72,13 +96,6 @@ public extension Runtime {
 }
 
 extension Runtime {
-    func initMemory(module: Module, hostEnvironment: HostEnvironment) {
-        guard let dataSection = module.dataSection else { return }
-        dataSection.datas.elements.forEach { data in
-            hostEnvironment.updateMemory(data: data)
-        }
-    }
-    
     func executeFunction(moduleInstance: ModuleInstance,
                          functionAddress: FunctionAddress) throws {
         

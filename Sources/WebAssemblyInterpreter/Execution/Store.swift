@@ -85,8 +85,8 @@ extension Store {
         case .table:
             fatalError("Not implemented yet")
         case let .memory(memoryType):
-            // TODO: Implement
-            break
+            allocate(memoryType: memoryType,
+                     module: module)
         case let .global(globalType):
             let address = globals.count
             guard let globalValue = hostEnvironment.findGlobal(name: `import`.name),

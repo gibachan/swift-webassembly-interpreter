@@ -14,11 +14,7 @@ public final class HostMemory {
     
     public init(page: Int) {
         self.page = page
-        self.data = Data(count: page * 64 * 1000)
-    }
-    
-    func initData() {
-        data = Data(count: page * 64 * 1000)
+        self.data = Data() // FIXME
     }
 }
 
@@ -41,37 +37,6 @@ public extension HostEnvironment {
 }
 
 extension HostEnvironment {
-    func initMemory(limits: Limits) {
-        // TODO: Implement memory initilization
-        memory.initData()
-    }
-    
-    func updateMemory(data: DataSection.Data) {
-        // TODO: Execute data.expression
-        guard let position = data.expression.instructions.compactMap({ instruction in
-            switch instruction {
-            case let .globalGet(globalIndex):
-                return Int(globalIndex)
-            case let .i32Const(value):
-                return Int(value)
-            default:
-                return nil
-            }
-        }).first else {
-            return
-        }
-        
-        let newData = memory.data.indices.map { index in
-            if index >= position, index <= (position + data.initializer.elements.count - 1) {
-                return data.initializer.elements[index - position]
-            } else {
-                return memory.data[index]
-            }
-        }
-        
-        self.memory.data = Data(newData)
-    }
-    
     func findCode(name: String) -> HostCode? {
         return codes[name]
     }
