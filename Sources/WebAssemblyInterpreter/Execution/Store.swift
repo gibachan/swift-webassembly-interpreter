@@ -119,16 +119,21 @@ extension Store {
 }
 
 extension Store {
-    func getFunctionType(at index: FunctionAddress) -> FunctionType {
-        let instance = functions[index]
-        return instance.functionType
+    func getGlobal(index: GlobalIndex) throws -> Value {
+        guard globals.indices.contains(Int(index)) else {
+            fatalError()
+        }
+        return globals[Int(index)].value
     }
-    
-    func getGlobal(at index: GlobalAddress) -> Value {
-        globals[index].value
-    }
-    
-    func setGlobal(at index: GlobalAddress, value: Value) {
-        globals[index].value = value
+
+    func setGlobal(index: GlobalIndex, value: Value) throws {
+        guard globals.indices.contains(Int(index)) else {
+            fatalError()
+        }
+        let global = globals[Int(index)]
+        guard global.type.mutability == .var else {
+            fatalError()
+        }
+        global.value = value
     }
 }

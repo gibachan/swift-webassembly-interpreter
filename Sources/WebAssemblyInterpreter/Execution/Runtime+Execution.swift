@@ -141,14 +141,14 @@ extension Runtime {
             }
         case let .globalGet(globalIndex):
             // TODO: Should get global address from current frame
-            let value = store.getGlobal(at: GlobalAddress(globalIndex))
+            let value = try store.getGlobal(index: globalIndex)
             stack.push(value: value)
         case let .globalSet(globalIndex):
             // TODO: Should get global address from current frame
             guard let value = stack.popValue() else {
                 throw RuntimeError.invalidValueType
             }
-            store.setGlobal(at: GlobalAddress(globalIndex), value: value)
+            try store.setGlobal(index: globalIndex, value: value)
         case .f32Add:
             guard let c2Value = stack.pop(.number(.f32)),
                   let c1Value = stack.pop(.number(.f32)) else {

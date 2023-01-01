@@ -81,7 +81,12 @@ public extension Runtime {
             fatalError()
         }
         
-        let functionType = store.getFunctionType(at: functionAddress)
+        guard functionAddress < store.functions.count else {
+            fatalError()
+        }
+
+        let functionInstance = store.functions[functionAddress]
+        let functionType = functionInstance.functionType
         
         try executeFunction(moduleInstance: moduleInstance,
                             functionAddress: functionAddress)
