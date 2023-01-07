@@ -95,7 +95,7 @@ final class WasmDecoderTests: XCTestCase {
             return
         }
 
-        XCTAssertEqual(code.locals.count, 3)
+        XCTAssertEqual(code.locals.elements.first?.count, 3)
     }
 
     func testDecodeFuncReturnConst() throws {
@@ -122,7 +122,7 @@ final class WasmDecoderTests: XCTestCase {
             return
         }
         XCTAssertEqual(code.size, 4)
-        XCTAssertEqual(code.locals.count, 0)
+        XCTAssertEqual(code.locals.length, 0)
         XCTAssertEqual(code.expression.instructions.count, 2)
         if case let .i32Const(value) = code.expression.instructions[0] {
             XCTAssertEqual(value, 1)
@@ -161,7 +161,7 @@ final class WasmDecoderTests: XCTestCase {
             return
         }
         XCTAssertEqual(code.size, 2)
-        XCTAssertEqual(code.locals.count, 0)
+        XCTAssertEqual(code.locals.length, 0)
         XCTAssertEqual(code.expression.instructions.count, 1) // end
 
         // export section
@@ -267,7 +267,7 @@ final class WasmDecoderTests: XCTestCase {
             return
         }
         XCTAssertEqual(code.size, 7)
-        XCTAssertEqual(code.locals.count, 0)
+        XCTAssertEqual(code.locals.length, 0)
         XCTAssertEqual(code.expression.instructions.count, 4)
 
         let getLocal1 = code.expression.instructions[0]
@@ -427,8 +427,8 @@ final class WasmDecoderTests: XCTestCase {
         XCTAssertEqual(code.size, 16)
 
         // Local
-        XCTAssertEqual(code.locals.count, 1)
-        guard let local = code.locals.first else {
+        XCTAssertEqual(code.locals.length, 1)
+        guard let local = code.locals.elements.first?.first else {
             XCTFail("Local is missing")
             return
         }
@@ -590,6 +590,25 @@ final class WasmDecoderTests: XCTestCase {
             return
         }
         XCTAssertEqual(memoryType, MemoryType.min(n: 1))
+    }
+
+    func testDecodeMemoryAccumulate() throws {
+        let fileURL = Bundle.module.url(forResource: "memory_accumulate", withExtension: "wasm")!
+        let filePath = fileURL.path
+        let decoder = try WasmDecoder(filePath: filePath)
+        let wasm = try decoder.invoke()
+
+        guard let memorySection = wasm.module.memorySection else {
+            XCTFail("Memory section is missing")
+            return
+        }
+        XCTAssertEqual(memorySection.memoryTypes.length, 1)
+
+        guard let memoryType = memorySection.memoryTypes.elements.first else {
+            XCTFail("MemoryType is missing")
+            return
+        }
+        XCTAssertEqual(memoryType, MemoryType.minMax(n: 1, m: 256))
     }
 
     func testDecodeGlobal() throws {

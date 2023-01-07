@@ -174,9 +174,13 @@ extension Runtime {
             let result: F64 = value1 + value2
             stack.push(value: Value(value: result))
             
+        // Memory Instructions
+        case .i32Load:
+            fatalError()
         case .dataDrop:
             fatalError()
             
+        // Numeric Instructions
         case let .i32Const(value):
             stack.push(value: Value(value: value))
         case .i64Const:

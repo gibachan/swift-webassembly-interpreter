@@ -53,7 +53,7 @@ extension Module {
         
         let functions = codes.enumerated().map { index, code in
             Function(index: typeIndices[index],
-                     locals: code.locals,
+                     locals: code.locals.elements.flatMap { $0 },
                      body: code.expression)
         }
         

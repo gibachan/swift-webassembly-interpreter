@@ -37,6 +37,7 @@ enum Instruction {
 
     // Memory Instructions
     // https://webassembly.github.io/spec/core/binary/instructions.html#memory-instructions
+    case i32Load(MemoryArgument)
     case dataDrop(DataIndex)
     
     // Numeric Instructions
@@ -91,6 +92,7 @@ extension Instruction {
         
         // Memory Instructions
         // https://webassembly.github.io/spec/core/binary/instructions.html#memory-instructions
+        case i32Load = 0x28
         case dataDrop = 0xFC
 
         // Numeric Instructions
@@ -139,8 +141,11 @@ extension Instruction {
         case .f32Add: return .f32Add
         case .f64Add: return .f64Add
             
+        // Memory Instructions
+        case .i32Load: return .i32Load
         case .dataDrop: return .dataDrop
             
+        // Numeric Instructions
         case .i32Const: return .i32Const
         case .i64Const: return .i64Const
         case .f32Const: return .f32Const
@@ -183,4 +188,11 @@ extension Instruction {
         default: return false
         }
     }
+}
+
+// https://webassembly.github.io/spec/core/syntax/instructions.html#memory-instructions
+
+struct MemoryArgument {
+    let offset: U32
+    let align: U32
 }

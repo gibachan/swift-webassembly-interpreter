@@ -569,13 +569,12 @@ private extension WasmDecoder {
 
                 let valueType = try decodeValueType()
                 return (0 ..< n).map { _ in valueType }
-
             }
             
             let expression = try decodeExpression()
             
             return CodeSection.Code(size: size,
-                                    locals: locals.elements.flatMap { $0 },
+                                    locals: locals,
                                     expression: expression)
         }
         
@@ -729,6 +728,14 @@ private extension WasmDecoder {
                 instruction = .f64Add
 
             // Memory Instructions
+            case .i32Load:
+                guard let offset = source.consumeU32(),
+                      let align = source.consumeU32() else {
+                    throw WasmDecodeError.illegalExpression
+                }
+                let memoryArgument = MemoryArgument(offset: offset,
+                                                    align: align)
+                instruction = .i32Load(memoryArgument)
             case .dataDrop:
                 guard let const = source.consumeU32(),
                       const == 9 else {

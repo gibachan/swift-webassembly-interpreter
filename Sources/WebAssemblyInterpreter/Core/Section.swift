@@ -313,7 +313,7 @@ struct CodeSection {
     
     struct Code {
         let size: U32
-        let locals: [ValueType]
+        let locals: Vector<[ValueType]>
         let expression: Expression
     }
 }
@@ -335,8 +335,9 @@ extension CodeSection.Code: CustomDebugStringConvertible {
     var debugDescription: String {
         [
             "[Code] Size: \(size)",
-            "Local count: \(locals.count)",
+            "Local count: \(locals.length)",
             locals
+                .elements
                 .map { "\($0)" }
                 .joined(separator: ", "),
             "\(expression)"

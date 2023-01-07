@@ -392,17 +392,17 @@ private extension WasmEncoder {
                 code.size.unsignedLEB128.forEach {
                     bytes.append($0)
                 }
-                UInt(code.locals.count).unsignedLEB128.forEach {
+                UInt(code.locals.length).unsignedLEB128.forEach {
                     bytes.append($0)
                 }
-                code.locals.forEach { valueType in
-                    // Not sure if it is always UInt8(1)
-                    UInt8(1).unsignedLEB128.forEach {
+                code.locals.elements.forEach { valueTypes in
+                    U32(valueTypes.count).unsignedLEB128.forEach {
                         bytes.append($0)
                     }
-                    
-                    encodeValueType(valueType).forEach {
-                        bytes.append($0)
+                    valueTypes.first.map { valueType in
+                        encodeValueType(valueType).forEach {
+                            bytes.append($0)
+                        }
                     }
                 }
                 encodeExpression(code.expression).forEach {
@@ -523,6 +523,14 @@ private extension WasmEncoder {
                 break
                 
             // Memory Instructions
+            case let .i32Load(memoryArgument):
+                memoryArgument.offset.unsignedLEB128.forEach {
+                    bytes.append($0)
+                }
+                memoryArgument.align.unsignedLEB128.forEach {
+                    bytes.append($0)
+                }
+                
             case let .dataDrop(dataIndex):
                 U32(9).unsignedLEB128.forEach {
                     bytes.append($0)
