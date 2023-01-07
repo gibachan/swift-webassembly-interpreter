@@ -59,6 +59,25 @@ public enum Value: Equatable {
             fatalError("Not supported yet")
         }
     }
+    
+    init(type: ValueType,
+         bytes: [Byte]) {
+        switch type {
+        case let .number(numberType):
+            switch numberType {
+            case .i32:
+                self = .i32(Data(bytes).withUnsafeBytes { $0.load( as: I32.self ) })
+            case .i64:
+                self = .i64(Data(bytes).withUnsafeBytes { $0.load( as: I64.self ) })
+            case .f32:
+                self = .f32(Data(bytes).withUnsafeBytes { $0.load( as: F32.self ) })
+            case .f64:
+                self = .f64(Data(bytes).withUnsafeBytes { $0.load( as: F64.self ) })
+            }
+        case .vector, .reference:
+            fatalError("Not supported yet")
+        }
+    }
 }
 
 extension Value {
@@ -74,6 +93,15 @@ extension Value {
             return .f64(0)
         case .vector:
             return .vector
+        }
+    }
+    
+    var asI32: I32? {
+        switch self {
+        case let .i32(value):
+            return value
+        case .i64, .f32, .f64, .vector:
+            return nil
         }
     }
 }

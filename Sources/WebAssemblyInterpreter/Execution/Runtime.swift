@@ -13,7 +13,7 @@ enum RuntimeError: Error {
 }
 
 public final class Runtime {
-    private(set) var store = Store()
+    private(set) public var store = Store()
     private(set) var stack = Stack()
     
     public init() {

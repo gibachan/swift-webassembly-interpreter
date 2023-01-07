@@ -524,10 +524,10 @@ private extension WasmEncoder {
                 
             // Memory Instructions
             case let .i32Load(memoryArgument):
-                memoryArgument.offset.unsignedLEB128.forEach {
+                memoryArgument.align.unsignedLEB128.forEach {
                     bytes.append($0)
                 }
-                memoryArgument.align.unsignedLEB128.forEach {
+                memoryArgument.offset.unsignedLEB128.forEach {
                     bytes.append($0)
                 }
                 

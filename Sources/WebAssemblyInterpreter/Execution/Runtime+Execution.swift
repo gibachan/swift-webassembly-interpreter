@@ -175,8 +175,32 @@ extension Runtime {
             stack.push(value: Value(value: result))
             
         // Memory Instructions
-        case .i32Load:
-            fatalError()
+        case let .i32Load(memoryArgument):
+            guard let frame = stack.currentFrame else {
+                fatalError()
+            }
+
+            let memoryAddress = frame.module.memoryAddresses[0]
+            let memoryInstance = store.memories[memoryAddress]
+            
+            guard let value = stack.pop(.number(.i32)) else {
+                fatalError()
+            }
+            guard let i32Value = value.asI32 else {
+                fatalError()
+            }
+
+            let ea = Int(i32Value) + Int(memoryArgument.offset)
+            let bitWidth = 32 / 8
+            let bytes = Array(memoryInstance.data[ea..<(ea + bitWidth)])
+            
+            let bytesString = bytes.map { $0.hex }.joined()
+            let _tmp = Data(bytes).withUnsafeBytes { $0.load( as: I32.self ) }
+            
+            print("i32Value=\(i32Value), offset=\(memoryArgument.offset), ea=\(ea), bytesString=\(bytesString), value=\(_tmp)")
+
+            let loadedValue = Value(type: .number(.i32), bytes: bytes)
+            stack.push(value: loadedValue)
         case .dataDrop:
             fatalError()
             
@@ -231,7 +255,17 @@ extension Runtime {
         case .i32Sub:
             fatalError()
         case .i32Mul:
-            fatalError()
+            guard let c2Value = stack.pop(.number(.i32)),
+                  let c1Value = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value1) = c1Value,
+                  case .i32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result: I32 = value1 * value2
+            stack.push(value: Value(value: result))
         case .i32RemU:
             guard let c2Value = stack.pop(.number(.i32)),
                   let c1Value = stack.pop(.number(.i32)) else {

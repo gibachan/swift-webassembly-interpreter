@@ -8,7 +8,7 @@
 import Foundation
 
 // https://www.slideshare.net/TakayaSaeki/webassemblyweb-244794176
-final class Store {
+public final class Store {
     private(set) var functions: [FunctionInstance] = []
     private(set) var memories: [MemoryInstance] = []
     private(set) var globals: [GlobalInstance] = []
@@ -115,6 +115,19 @@ extension Store {
         let instance = GlobalInstance(type: type, value: value)
         globals.append(instance)
         module.globalAddresses.append(address)
+    }
+}
+
+public extension Store {
+    func write(memoryAddress: MemoryAddress,
+               bytes: [Byte],
+               offset: Int) {
+        let memoryInstance = memories[memoryAddress]
+        for index in 0..<bytes.count {
+            memoryInstance.data[offset + index] = bytes[index]
+        }
+        let string = memoryInstance.data[0..<40].map { $0.hex }.joined()
+        print("[Memory]\(string)")
     }
 }
 

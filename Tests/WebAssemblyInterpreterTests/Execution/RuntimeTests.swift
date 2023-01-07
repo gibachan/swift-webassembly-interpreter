@@ -272,4 +272,29 @@ final class RuntimeTests: XCTestCase {
                            functionName: "fizzbuzz", arguments: [.i32(31)], result: &result)
         XCTAssertEqual(printedStrings, ["1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz", "16", "17", "Fizz", "19", "Buzz", "Fizz", "22", "23", "Fizz", "Buzz", "26", "Fizz", "28", "29", "FizzBuzz"])
     }
+
+    func testMemoryAccumulate() throws {
+        let fileURL = Bundle.module.url(forResource: "memory_accumulate", withExtension: "wasm")!
+        let filePath = fileURL.path
+        let decoder = try WasmDecoder(filePath: filePath)
+        let wasm = try decoder.invoke()
+
+        let runtime = Runtime()
+        let moduleInstance = runtime.instanciate(module: wasm.module)
+        runtime.store.write(memoryAddress: 0, bytes: [0x00, 0x00, 0x00, 0x00,
+                                                      0x01, 0x00, 0x00, 0x00,
+                                                      0x02, 0x00, 0x00, 0x00,
+                                                      0x03, 0x00, 0x00, 0x00,
+                                                      0x04, 0x00, 0x00, 0x00,
+                                                      0x05, 0x00, 0x00, 0x00,
+                                                      0x06, 0x00, 0x00, 0x00,
+                                                      0x07, 0x00, 0x00, 0x00,
+                                                      0x08, 0x00, 0x00, 0x00,
+                                                      0x09, 0x00, 0x00, 0x00], offset: 10)
+        var result: Value?
+
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "accumulate", arguments: [.i32(10), .i32(20)], result: &result)
+        XCTAssertEqual(result, .i32(45))
+    }
 }

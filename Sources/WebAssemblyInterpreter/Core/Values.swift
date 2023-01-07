@@ -8,7 +8,7 @@
 import Foundation
 
 // https://webassembly.github.io/spec/core/binary/values.html#bytes
-typealias Byte = UInt8
+public typealias Byte = UInt8
 
 // https://webassembly.github.io/spec/core/binary/values.html#integers
 
