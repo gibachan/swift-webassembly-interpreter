@@ -1,9 +1,10 @@
 # swift-webassembly-interpreter
 
-https://webassembly.github.io/spec/core/
+A toy WebAssembly interpreter written in Swift. This project is intended to learn [WebAssembly spec](https://webassembly.github.io/spec/core/) and just having fun with wasm.
 
 ## Usage
 
+For examle, it can execute Fizz Buzz logic described in wasm as below.
 ```
 % swift run FizzBuzz 16
 Building for debugging...
@@ -25,3 +26,5 @@ Fizz
 14
 FizzBuzz
 ```
+
+For more detail can be found in [test cases](https://github.com/gibachan/swift-webassembly-interpreter/blob/main/Tests/WebAssemblyInterpreterTests/Execution/RuntimeTests.swift).
