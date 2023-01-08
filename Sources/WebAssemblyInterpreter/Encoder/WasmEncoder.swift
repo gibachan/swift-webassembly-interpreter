@@ -125,6 +125,8 @@ private extension WasmEncoder {
                 bytes.append(vectorType.rawValue)
             case let .reference(referenceType):
                 bytes.append(referenceType.rawValue)
+            case .referenceNull:
+                break
             }
         }
         return bytes
@@ -567,6 +569,8 @@ private extension WasmEncoder {
             return [type.rawValue]
         case let .reference(type):
             return [type.rawValue]
+        case .referenceNull:
+            return []
         }
     }
 }

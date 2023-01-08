@@ -14,7 +14,7 @@ public enum Value: Equatable {
     case f32(F32)
     case f64(F64)
     case vector
-//    case reference
+    case reference(Reference)
     
     var type: ValueType {
         switch self {
@@ -23,6 +23,15 @@ public enum Value: Equatable {
         case .f32: return .number(.f32)
         case .f64: return .number(.f64)
         case .vector: return .vector(.v128)
+        case let .reference(reference):
+            switch reference {
+            case .null:
+                return .referenceNull
+            case .function:
+                return .reference(.function)
+            case .extern:
+                return .reference(.extern)
+            }
         }
     }
     
@@ -55,7 +64,7 @@ public enum Value: Equatable {
             case .f64:
                 self = .f64(0)
             }
-        case .vector, .reference:
+        case .vector, .reference, .referenceNull:
             fatalError("Not supported yet")
         }
     }
@@ -74,13 +83,17 @@ public enum Value: Equatable {
             case .f64:
                 self = .f64(Data(bytes).withUnsafeBytes { $0.load( as: F64.self ) })
             }
-        case .vector, .reference:
+        case .vector, .reference, .referenceNull:
             fatalError("Not supported yet")
         }
     }
 }
 
 extension Value {
+    enum ReferenceType {
+        case functionAddress
+    }
+
     var defaultValue: Self {
         switch self {
         case .i32:
@@ -93,6 +106,8 @@ extension Value {
             return .f64(0)
         case .vector:
             return .vector
+        case .reference:
+            return .reference(.null)
         }
     }
     
@@ -100,7 +115,7 @@ extension Value {
         switch self {
         case let .i32(value):
             return value
-        case .i64, .f32, .f64, .vector:
+        case .i64, .f32, .f64, .vector, .reference:
             return nil
         }
     }

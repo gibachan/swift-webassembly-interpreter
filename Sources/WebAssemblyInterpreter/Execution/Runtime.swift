@@ -28,6 +28,24 @@ public extension Runtime {
         let moduleInstance = store.allocate(module: module,
                                             hostEnvironment: hostEnvironment)
         
+        for element in module.elements {
+            let tableInstance = store.tables[Int(element.index)]
+            guard let offset = element.expression.instructions.compactMap({ instruction in
+                switch instruction {
+                case let .i32Const(value):
+                    return Int(value)
+                default:
+                    return nil
+                }
+            }).first else {
+                fatalError()
+            }
+            for index in element.indices.elements {
+                let functionAddress = moduleInstance.functionAddresses[Int(index)]
+                tableInstance.elements[Int(index) + offset] = Reference.function(functionAddress)
+            }
+        }
+        
         for data in module.datas {
             let memoryAddress = moduleInstance.memoryAddresses[Int(data.memoryIndex)]
             let memoryInstance = store.memories[memoryAddress]
@@ -143,6 +161,8 @@ extension Runtime {
                     case let .f64(value):
                         locals.insert(Value(value: value), at: 0)
                     case .vector:
+                        fatalError("Not implemented yet")
+                    case .reference:
                         fatalError("Not implemented yet")
                     }
                 }

@@ -297,4 +297,22 @@ final class RuntimeTests: XCTestCase {
                            functionName: "accumulate", arguments: [.i32(10), .i32(20)], result: &result)
         XCTAssertEqual(result, .i32(45))
     }
+
+    func testTable() throws {
+        let fileURL = Bundle.module.url(forResource: "table", withExtension: "wasm")!
+        let filePath = fileURL.path
+        let decoder = try WasmDecoder(filePath: filePath)
+        let wasm = try decoder.invoke()
+
+        let runtime = Runtime()
+        let moduleInstance = runtime.instanciate(module: wasm.module)
+        var result: Value?
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "TestIncrementGlobal", arguments: [], result: &result)
+        XCTAssertEqual(result, .i32(1))
+
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "TestSquare", arguments: [.i32(4)], result: &result)
+        XCTAssertEqual(result, .i32(16))
+    }
 }

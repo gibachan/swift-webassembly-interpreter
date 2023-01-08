@@ -11,7 +11,7 @@ import Foundation
 public final class ModuleInstance {
     var types: [FunctionType] = []
     var functionAddresses: [FunctionAddress] = []
-//    var tableAddresses: [TableAddress] = []
+    var tableAddresses: [TableAddress] = []
     var memoryAddresses: [MemoryAddress] = []
     var globalAddresses: [GlobalAddress] = []
 //    var elementAddresses: [ElementAddress] = []

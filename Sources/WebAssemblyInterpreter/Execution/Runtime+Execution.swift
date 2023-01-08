@@ -53,6 +53,8 @@ extension Runtime {
                 ifValue = value != 0
             case .vector:
                 fatalError("Not implemented yet")
+            case .reference:
+                fatalError("Not implemented yet")
             }
             if ifValue {
                 let label = Label(blockType: blockType,
@@ -98,6 +100,8 @@ extension Runtime {
                 ifValue = value != 0
             case .vector:
                 fatalError("Not implemented yet")
+            case .reference:
+                fatalError("Not implemented yet")
             }
             if ifValue {
                 executeBr(labelIndex: labelIndex,
@@ -117,9 +121,32 @@ extension Runtime {
             }
             stackActivationFrame(at: FunctionAddress(functionIndex),
                                  in: frame.module)
-        case .callIndirect:
-            fatalError()
+        case let .callIndirect(typeIndex, tableIndex):
+            guard let frame = stack.currentFrame else {
+                fatalError()
+            }
+            let tableAddress = frame.module.tableAddresses[Int(tableIndex)]
+            let table = store.tables[tableAddress]
+            let functionType = frame.module.types[Int(typeIndex)]
+            guard let indexValue = stack.pop(.number(.i32)),
+                  let index = indexValue.asI32 else {
+                fatalError()
+            }
 
+            let reference = table.elements[Int(index)]
+            switch reference {
+            case .null:
+                fatalError()
+            case let .function(functionAddress):
+                let functionInstance = store.functions[functionAddress]
+                if functionType != functionInstance.functionType {
+                    fatalError("Function type should match")
+                }
+                stackActivationFrame(at: functionAddress,
+                                     in: frame.module)
+            case .extern:
+                fatalError()
+            }
         case let .localGet(localIndex):
             let value = frame.locals[Int(localIndex)]
             stack.push(value: value)

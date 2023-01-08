@@ -54,10 +54,11 @@ extension ReferenceType: CustomDebugStringConvertible {
 }
 
 // https://webassembly.github.io/spec/core/binary/types.html#value-types
-enum ValueType {
+enum ValueType: Equatable {
     case number(NumberType)
     case vector(VectorType)
     case reference(ReferenceType)
+    case referenceNull
 }
 
 extension ValueType {
@@ -75,8 +76,6 @@ extension ValueType {
     }
 }
 
-extension ValueType: Equatable {}
-
 extension ValueType: CustomDebugStringConvertible {
     var debugDescription: String {
         let type: String
@@ -85,8 +84,10 @@ extension ValueType: CustomDebugStringConvertible {
             type = "Number Type: \(_type)"
         case .vector:
             type = "Vector Type"
-        case .reference:
-            type = "Reference Type"
+        case let .reference(_type):
+            type = "Reference Type: \(_type)"
+        case .referenceNull:
+            type = "Reference Null Type"
         }
         return [
             "[Value Type] \(type)"
@@ -96,7 +97,7 @@ extension ValueType: CustomDebugStringConvertible {
 
 
 // https://webassembly.github.io/spec/core/binary/types.html#result-types
-struct ResultType {
+struct ResultType: Equatable {
     let valueTypes: Vector<ValueType>
 }
 
@@ -111,7 +112,7 @@ extension ResultType: CustomDebugStringConvertible {
 }
 
 // https://webassembly.github.io/spec/core/binary/types.html#function-types
-struct FunctionType {
+struct FunctionType: Equatable {
     static let id: Byte = 0x60
     
     let parameterTypes: ResultType

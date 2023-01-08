@@ -12,3 +12,5 @@ struct Vector<T> {
     let length: U32
     let elements: [T]
 }
+
+extension Vector: Equatable where T: Equatable {}

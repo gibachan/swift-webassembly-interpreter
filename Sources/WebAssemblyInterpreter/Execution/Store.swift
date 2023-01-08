@@ -10,6 +10,7 @@ import Foundation
 // https://www.slideshare.net/TakayaSaeki/webassemblyweb-244794176
 public final class Store {
     private(set) var functions: [FunctionInstance] = []
+    private(set) var tables: [TableInstance] = []
     private(set) var memories: [MemoryInstance] = []
     private(set) var globals: [GlobalInstance] = []
 }
@@ -30,6 +31,10 @@ extension Store {
         
         module.functions.forEach {
             allocate(function: $0, module: moduleInstance)
+        }
+        
+        module.tables.forEach {
+            allocate(tableType: $0, module: moduleInstance)
         }
 
         module.memories.forEach {
@@ -67,6 +72,14 @@ extension Store {
                                         code: .module(module: module, code: function))
         functions.append(instance)
         module.functionAddresses.append(address)
+    }
+    
+    // https://webassembly.github.io/spec/core/exec/modules.html#alloc-table
+    func allocate(tableType: TableType, module: ModuleInstance) {
+        let address = tables.count
+        let instance = TableInstance(type: tableType)
+        tables.append(instance)
+        module.tableAddresses.append(address)
     }
     
     // https://webassembly.github.io/spec/core/exec/modules.html#host-functions

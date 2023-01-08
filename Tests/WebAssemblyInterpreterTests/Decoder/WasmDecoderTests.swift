@@ -532,7 +532,7 @@ final class WasmDecoderTests: XCTestCase {
             XCTFail("TableType is missing")
             return
         }
-        XCTAssertEqual(tableType, TableType(referenceType: .function, limits: .min(n: 0)))
+        XCTAssertEqual(tableType, TableType(referenceType: .function, limits: .min(n: 2)))
     }
 
     func testDecodeTableTest() throws {

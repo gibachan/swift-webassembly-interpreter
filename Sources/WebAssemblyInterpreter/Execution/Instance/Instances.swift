@@ -32,7 +32,16 @@ public final class FunctionInstance {
 }
 
 // https://webassembly.github.io/spec/core/exec/runtime.html#table-instances
-public final class TableInstance {} // TODO: implement
+public final class TableInstance {
+    let type: TableType
+    var elements: [Reference]
+    
+    init(type: TableType) {
+        self.type = type
+        let elementCount = type.limits.max ?? type.limits.min
+        self.elements = Array(repeating: .null, count: Int(elementCount))
+    }
+}
 
 // https://webassembly.github.io/spec/core/exec/runtime.html#memory-instances
 public final class MemoryInstance {

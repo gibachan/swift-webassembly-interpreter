@@ -33,3 +33,11 @@ public typealias I64 = Int64
 // Floating point
 public typealias F32 = Float32
 public typealias F64 = Float64
+
+// Reference
+// https://webassembly.github.io/spec/core/exec/runtime.html#syntax-ref
+public enum Reference: Equatable {
+    case null
+    case function(FunctionAddress)
+    case extern // TODO: Add Externaddr
+}
