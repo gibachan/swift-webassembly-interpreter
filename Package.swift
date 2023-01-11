@@ -36,6 +36,11 @@ let package = Package(
             dependencies: ["WebAssemblyInterpreter"],
             resources: [.process("Resources")]
         ),
+        .testTarget(
+            name: "Spec",
+            dependencies: ["WebAssemblyInterpreter"],
+            resources: [.process("Resources")]
+        ),
         .plugin(
             name: "SwiftLintPlugin",
             capability: .buildTool(),
