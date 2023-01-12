@@ -517,9 +517,15 @@ private extension WasmEncoder {
                 value.signedLEB128.forEach {
                     bytes.append($0)
                 }
+
             // Control InstructionsI
             case .unreachable, .nop, .return:
                 break
+                
+            // Parametric Instructions
+            case .drop:
+                break
+
             // Variable Instructions
             case .f32Add, .f64Add:
                 break

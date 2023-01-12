@@ -147,6 +147,12 @@ extension Runtime {
             case .extern:
                 fatalError()
             }
+        
+        // Parametric Instructions
+        case .drop:
+            _ = stack.popValue()
+            
+        // Variable Instructions
         case let .localGet(localIndex):
             let value = frame.locals[Int(localIndex)]
             stack.push(value: value)

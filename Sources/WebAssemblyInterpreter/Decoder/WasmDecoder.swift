@@ -696,6 +696,10 @@ private extension WasmDecoder {
                 }
                 instruction = .callIndirect(typeIndex, tablendex)
 
+            // Parametric Instructions
+            case .drop:
+                instruction = .drop
+                
             // Variable Instructions
             case .localGet:
                 guard let index = source.consumeU32() else {

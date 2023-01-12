@@ -2,25 +2,42 @@
 import XCTest
 
 final class SpecTests: XCTestCase {
-    func testExample() {
-        let fileURL = Bundle.module.url(forResource: "const.wast", withExtension: "json")!
-        let filePath = fileURL.path
-        guard let fileHandle = FileHandle(forReadingAtPath: filePath) else {
+    func testConstWast() {
+        guard let wast = decodeWastJSON(fileName: "const.wast") else {
             XCTFail()
             return
         }
-        defer { fileHandle.closeFile() }
+
+        guard let command = wast.commands.first else {
+            return
+        }
+
+        switch command.type {
+        case .module:
+            testModule(command: command)
+        default:
+            XCTFail("Not Implemented yet")
+        }
+    }
+}
+
+extension XCTestCase {
+    func testModule(command: Wast.Command,
+                    file: StaticString = #filePath,
+                    line: UInt = #line) {
+        guard let filename = command.filename else {
+            XCTFail("filename is missing")
+            return
+        }
 
         do {
-            guard let data = try fileHandle.readToEnd() else {
-                XCTFail()
-                return
-            }
-            print(String(data: data, encoding: .utf8)!)
-
-            XCTAssertEqual(1 + 1, 2)
+            let fileURL = Bundle.module.url(forResource: filename, withExtension: "")!
+            let filePath = fileURL.path
+            let decoder = try WasmDecoder(filePath: filePath)
+            _ = try decoder.invoke()
         } catch {
-            XCTFail()
+            XCTFail("\(error)", file: file, line: line)
+            return
         }
     }
 }

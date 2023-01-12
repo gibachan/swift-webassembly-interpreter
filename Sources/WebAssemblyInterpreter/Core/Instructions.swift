@@ -23,6 +23,10 @@ enum Instruction {
     case `return`
     case call(FunctionIndex)
     case callIndirect(TypeIndex, TableIndex)
+    
+    // Parametric Instructions
+    // https://webassembly.github.io/spec/core/binary/instructions.html#parametric-instructions
+    case drop
 
     // Variable Instructions
     // https://webassembly.github.io/spec/core/binary/instructions.html#variable-instructions
@@ -79,6 +83,10 @@ extension Instruction {
         case call = 0x10
         case callIndirect = 0x11
         
+        // Parametric Instructions
+        // https://webassembly.github.io/spec/core/binary/instructions.html#parametric-instructions
+        case drop = 0x1A
+        
         // Variable Instructions
         // https://webassembly.github.io/spec/core/binary/instructions.html#variable-instructions
         case localGet = 0x20
@@ -132,6 +140,10 @@ extension Instruction {
         case .call: return .call
         case .callIndirect: return .callIndirect
             
+        // Parametric Instructions
+        case .drop: return .drop
+            
+        // Variable Instructions
         case .localGet: return .localGet
         case .localSet: return .localSet
         case .localTee: return .localTee
