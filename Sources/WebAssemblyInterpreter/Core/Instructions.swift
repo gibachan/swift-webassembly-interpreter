@@ -37,6 +37,7 @@ enum Instruction {
     case globalSet(GlobalIndex)
     
     case f32Add
+    case f32Div
     case f64Add
 
     // Memory Instructions
@@ -118,6 +119,8 @@ extension Instruction {
         case globalSet = 0x24
         
         case f32Add = 0x92
+        case f32Div = 0x95
+
         case f64Add = 0xA0
         
         // Memory Instructions
@@ -239,6 +242,8 @@ extension Instruction {
         case .i32Rotr: return .i32Rotr
             
         case .i64Add: return .i64Add
+            
+        case .f32Div: return .f32Div
             
         case .end: return .end
         }

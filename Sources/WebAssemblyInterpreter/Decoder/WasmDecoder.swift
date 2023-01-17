@@ -728,6 +728,8 @@ private extension WasmDecoder {
                 instruction = .globalSet(index)
             case .f32Add:
                 instruction = .f32Add
+            case .f32Div:
+                instruction = .f32Div
             case .f64Add:
                 instruction = .f64Add
 

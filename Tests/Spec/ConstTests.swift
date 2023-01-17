@@ -8,15 +8,24 @@ final class ConstTests: XCTestCase {
             return
         }
 
-        guard let command = wast.commands.first else {
-            return
-        }
-
-        switch command.type {
-        case .module:
-            testModule(command: command)
-        default:
-            XCTFail("Not Implemented yet")
+        let commands = wast.commands.prefix(5)
+        commands.forEach { command in
+            switch command.type {
+            case .module:
+                testModule(command: command)
+            case .assertMalformed:
+                // TODO: Implement
+                break
+            case .assertReturn:
+                // TODO: Implement
+                break
+            case .assertTrap:
+                // TODO: Implement
+                break
+            case .assertInvalid:
+                // TODO: Implement
+                break
+            }
         }
     }
 }

@@ -23,7 +23,7 @@ extension XCTestCase {
             let decoder = try WasmDecoder(filePath: filePath)
             _ = try decoder.invoke()
         } catch {
-            XCTFail("\(error)", file: file, line: line)
+            XCTFail("Failed for \(command.filename ?? "Unknown file"): \(error)", file: file, line: line)
             return
         }
     }

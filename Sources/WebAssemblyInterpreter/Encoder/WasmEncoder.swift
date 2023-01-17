@@ -527,7 +527,7 @@ private extension WasmEncoder {
                 break
 
             // Variable Instructions
-            case .f32Add, .f64Add:
+            case .f32Add, .f32Div, .f64Add:
                 break
                 
             // Memory Instructions
