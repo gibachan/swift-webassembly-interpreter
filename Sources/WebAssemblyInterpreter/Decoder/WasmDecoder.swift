@@ -764,22 +764,67 @@ private extension WasmDecoder {
                 instruction = .end // Temporary
             case .f64Const:
                 instruction = .end // Temporary
-                
+
+            case .i32Eqz:
+                instruction = .i32Eqz
             case .i32Eq:
                 instruction = .i32Eq
+            case .i32Ne:
+                instruction = .i32Ne
+            case .i32LtS:
+                instruction = .i32LtS
+            case .i32LtU:
+                instruction = .i32LtU
+            case .i32GtS:
+                instruction = .i32GtS
+            case .i32GtU:
+                instruction = .i32GtU
+            case .i32LeS:
+                instruction = .i32LeS
             case .i32LeU:
                 instruction = .i32LeU
+            case .i32GeS:
+                instruction = .i32GeS
             case .i32GeU:
                 instruction = .i32GeU
-                
+
+            case .i32Clz:
+                instruction = .i32Clz
+            case .i32Ctz:
+                instruction = .i32Ctz
+            case .i32Popcnt:
+                instruction = .i32Popcnt
             case .i32Add:
                 instruction = .i32Add
             case .i32Sub:
                 instruction = .i32Sub
             case .i32Mul:
                 instruction = .i32Mul
+            case .i32DivS:
+                instruction = .i32DivS
+            case .i32DivU:
+                instruction = .i32DivU
+            case .i32RemS:
+                instruction = .i32RemS
             case .i32RemU:
                 instruction = .i32RemU
+            case .i32And:
+                instruction = .i32And
+            case .i32Or:
+                instruction = .i32Or
+            case .i32Xor:
+                instruction = .i32Xor
+            case .i32Shl:
+                instruction = .i32Shl
+            case .i32ShrS:
+                instruction = .i32ShrS
+            case .i32ShrU:
+                instruction = .i32ShrU
+            case .i32Rotl:
+                instruction = .i32Rotl
+            case .i32Rotr:
+                instruction = .i32Rotr
+
             case .i64Add:
                 instruction = .i64Add
             // Expressions

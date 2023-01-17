@@ -246,6 +246,8 @@ extension Runtime {
             fatalError()
         case .f64Const:
             fatalError()
+        case .i32Eqz:
+            fatalError()
         case .i32Eq:
             // https://webassembly.github.io/spec/core/exec/numerics.html#xref-exec-numerics-op-ieq-mathrm-ieq-n-i-1-i-2
             guard let c2Value = stack.pop(.number(.i32)),
@@ -259,7 +261,21 @@ extension Runtime {
             
             let result: I32 = value1 == value2 ? 1 : 0
             stack.push(value: Value(value: result))
+        case .i32Ne:
+            fatalError()
+        case .i32LtS:
+            fatalError()
+        case .i32LtU:
+            fatalError()
+        case .i32GtS:
+            fatalError()
+        case .i32GtU:
+            fatalError()
+        case .i32LeS:
+            fatalError()
         case .i32LeU:
+            fatalError()
+        case .i32GeS:
             fatalError()
         case .i32GeU:
             guard let c2Value = stack.pop(.number(.i32)),
@@ -273,6 +289,12 @@ extension Runtime {
             
             let result: I32 = value1 >= value2 ? 1 : 0
             stack.push(value: Value(value: result))
+        case .i32Clz:
+            fatalError()
+        case .i32Ctz:
+            fatalError()
+        case .i32Popcnt:
+            fatalError()
         case .i32Add:
             guard let c2Value = stack.pop(.number(.i32)),
                   let c1Value = stack.pop(.number(.i32)) else {
@@ -299,6 +321,12 @@ extension Runtime {
 
             let result: I32 = value1 * value2
             stack.push(value: Value(value: result))
+        case .i32DivS:
+            fatalError()
+        case .i32DivU:
+            fatalError()
+        case .i32RemS:
+            fatalError()
         case .i32RemU:
             guard let c2Value = stack.pop(.number(.i32)),
                   let c1Value = stack.pop(.number(.i32)) else {
@@ -311,6 +339,23 @@ extension Runtime {
             
             let result: I32 = value1 % value2
             stack.push(value: Value(value: result))
+        case .i32And:
+            fatalError()
+        case .i32Or:
+            fatalError()
+        case .i32Xor:
+            fatalError()
+        case .i32Shl:
+            fatalError()
+        case .i32ShrS:
+            fatalError()
+        case .i32ShrU:
+            fatalError()
+        case .i32Rotl:
+            fatalError()
+        case .i32Rotr:
+            fatalError()
+
         case .i64Add:
             guard let c2Value = stack.pop(.number(.i64)),
                   let c1Value = stack.pop(.number(.i64)) else {

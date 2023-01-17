@@ -51,15 +51,37 @@ enum Instruction {
     case f32Const
     case f64Const
     
+    case i32Eqz
     case i32Eq
+    case i32Ne
+    case i32LtS
+    case i32LtU
+    case i32GtS
+    case i32GtU
+    case i32LeS
     case i32LeU
+    case i32GeS
     case i32GeU
     
+    case i32Clz
+    case i32Ctz
+    case i32Popcnt
     case i32Add
     case i32Sub
     case i32Mul
+    case i32DivS
+    case i32DivU
+    case i32RemS
     case i32RemU
-    
+    case i32And
+    case i32Or
+    case i32Xor
+    case i32Shl
+    case i32ShrS
+    case i32ShrU
+    case i32Rotl
+    case i32Rotr
+
     case i64Add
 
     // Expressions
@@ -109,16 +131,38 @@ extension Instruction {
         case i64Const = 0x42
         case f32Const = 0x43
         case f64Const = 0x44
-        
+
+        case i32Eqz = 0x45
         case i32Eq = 0x46
+        case i32Ne = 0x47
+        case i32LtS = 0x48
+        case i32LtU = 0x49
+        case i32GtS = 0x4A
+        case i32GtU = 0x4B
+        case i32LeS = 0x4C
         case i32LeU = 0x4D
+        case i32GeS = 0x4E
         case i32GeU = 0x4F
-        
+
+        case i32Clz = 0x67
+        case i32Ctz = 0x68
+        case i32Popcnt = 0x69
         case i32Add = 0x6A
         case i32Sub = 0x6B
         case i32Mul = 0x6C
+        case i32DivS = 0x6D
+        case i32DivU = 0x6E
+        case i32RemS = 0x6F
         case i32RemU = 0x70
-        
+        case i32And = 0x71
+        case i32Or = 0x72
+        case i32Xor = 0x73
+        case i32Shl = 0x74
+        case i32ShrS = 0x75
+        case i32ShrU = 0x76
+        case i32Rotl = 0x77
+        case i32Rotr = 0x79
+
         case i64Add = 0x7C
 
         // Expressions
@@ -163,14 +207,36 @@ extension Instruction {
         case .f32Const: return .f32Const
         case .f64Const: return .f64Const
             
+        case .i32Eqz: return .i32Eqz
         case .i32Eq: return .i32Eq
+        case .i32Ne: return .i32Ne
+        case .i32LtS: return .i32LtS
+        case .i32LtU: return .i32LtU
+        case .i32GtS: return .i32GtS
+        case .i32GtU: return .i32GtU
+        case .i32LeS: return .i32LeS
         case .i32LeU: return .i32LeU
+        case .i32GeS: return .i32GeS
         case .i32GeU: return .i32GeU
-            
+
+        case .i32Clz: return .i32Clz
+        case .i32Ctz: return .i32Ctz
+        case .i32Popcnt: return .i32Popcnt
         case .i32Add: return .i32Add
         case .i32Sub: return .i32Sub
         case .i32Mul: return .i32Mul
+        case .i32DivS: return .i32DivS
+        case .i32DivU: return .i32DivU
+        case .i32RemS: return .i32RemS
         case .i32RemU: return .i32RemU
+        case .i32And: return .i32And
+        case .i32Or: return .i32Or
+        case .i32Xor: return .i32Xor
+        case .i32Shl: return .i32Shl
+        case .i32ShrS: return .i32ShrS
+        case .i32ShrU: return .i32ShrU
+        case .i32Rotl: return .i32Rotl
+        case .i32Rotr: return .i32Rotr
             
         case .i64Add: return .i64Add
             

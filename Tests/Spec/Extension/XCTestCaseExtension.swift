@@ -1,25 +1,12 @@
+//
+//  XCTestCaseExtension.swift
+//  
+//
+//  Created by Tatsuyuki Kobayashi on 2023/01/17.
+//
+
 @testable import WebAssemblyInterpreter
 import XCTest
-
-final class SpecTests: XCTestCase {
-    func testConstWast() {
-        guard let wast = decodeWastJSON(fileName: "const.wast") else {
-            XCTFail()
-            return
-        }
-
-        guard let command = wast.commands.first else {
-            return
-        }
-
-        switch command.type {
-        case .module:
-            testModule(command: command)
-        default:
-            XCTFail("Not Implemented yet")
-        }
-    }
-}
 
 extension XCTestCase {
     func testModule(command: Wast.Command,

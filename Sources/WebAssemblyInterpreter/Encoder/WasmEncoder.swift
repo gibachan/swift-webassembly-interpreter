@@ -548,7 +548,13 @@ private extension WasmEncoder {
                 }
                 
             // Numeric Instruction
-            case .i64Const, .f32Const, .f64Const, .i32Eq, .i32LeU, .i32GeU, .i32Add, .i32Sub, .i32Mul, .i32RemU, .i64Add:
+            case .i64Const, .f32Const, .f64Const:
+                break
+            case .i32Eqz, .i32Eq, .i32Ne, .i32LtS, .i32LtU, .i32GtS, .i32GtU, .i32LeS, .i32LeU, .i32GeS, .i32GeU:
+                break
+            case .i32Clz, .i32Ctz, .i32Popcnt, .i32Add, .i32Sub, .i32Mul, .i32DivS, .i32DivU, .i32RemS, .i32RemU, .i32And, .i32Or, .i32Xor, .i32Shl, .i32ShrS, .i32ShrU, .i32Rotl, .i32Rotr:
+                break
+            case .i64Add:
                 break
             // Expressions
             case .end:

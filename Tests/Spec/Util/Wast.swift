@@ -29,6 +29,8 @@ extension Wast {
         case module
         case assertReturn = "assert_return"
         case assertMalformed = "assert_malformed"
+        case assertTrap = "assert_trap"
+        case assertInvalid = "assert_invalid"
     }
 
     struct Action: Decodable {
