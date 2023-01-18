@@ -85,6 +85,9 @@ enum Instruction {
 
     case i64Add
 
+    case i32Extend8S
+    case i32Extend16S
+
     // Expressions
     // https://webassembly.github.io/spec/core/binary/instructions.html#expressions
     case end
@@ -164,9 +167,12 @@ extension Instruction {
         case i32ShrS = 0x75
         case i32ShrU = 0x76
         case i32Rotl = 0x77
-        case i32Rotr = 0x79
+        case i32Rotr = 0x78
 
         case i64Add = 0x7C
+
+        case i32Extend8S = 0xC0
+        case i32Extend16S = 0xC1
 
         // Expressions
         // https://webassembly.github.io/spec/core/binary/instructions.html#expressions
@@ -242,7 +248,10 @@ extension Instruction {
         case .i32Rotr: return .i32Rotr
             
         case .i64Add: return .i64Add
-            
+
+        case .i32Extend8S: return .i32Extend8S
+        case .i32Extend16S: return .i32Extend16S
+
         case .f32Div: return .f32Div
             
         case .end: return .end

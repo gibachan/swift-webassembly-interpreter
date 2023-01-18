@@ -10,22 +10,22 @@ import XCTest
 
 final class I32Tests: XCTestCase {
     func testI32Wast() throws {
-        throw XCTSkip("Not ready for i32.wast test cases")
-
         guard let wast = decodeWastJSON(fileName: "i32.wast") else {
             XCTFail()
             return
         }
 
-        guard let command = wast.commands.first else {
-            return
-        }
-
-        switch command.type {
-        case .module:
-            testModule(command: command)
-        default:
-            XCTFail("Not Implemented yet")
+        var wasm: Wasm!
+        wast.commands.prefix(3).forEach { command in
+            switch command.type {
+            case .module:
+                wasm = testModule(command: command)
+            case .assertReturn:
+                testAssertReturn(wasm: wasm, command: command)
+            default:
+                // TODO: Implement
+                break
+            }
         }
     }
 }

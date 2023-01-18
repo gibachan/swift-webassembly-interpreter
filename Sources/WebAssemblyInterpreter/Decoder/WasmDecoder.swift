@@ -829,6 +829,12 @@ private extension WasmDecoder {
 
             case .i64Add:
                 instruction = .i64Add
+
+            case .i32Extend8S:
+                instruction = .i32Extend8S
+            case .i32Extend16S:
+                instruction = .i32Extend16S
+
             // Expressions
             case .end:
                 instruction = .end

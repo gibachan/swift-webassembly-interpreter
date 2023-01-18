@@ -556,6 +556,8 @@ private extension WasmEncoder {
                 break
             case .i64Add:
                 break
+            case .i32Extend8S, .i32Extend16S:
+                break
             // Expressions
             case .end:
                 break

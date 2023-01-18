@@ -320,7 +320,17 @@ extension Runtime {
             let result: I32 = value1 + value2
             stack.push(value: Value(value: result))
         case .i32Sub:
-            fatalError()
+            guard let c2Value = stack.pop(.number(.i32)),
+                  let c1Value = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value1) = c1Value,
+                  case .i32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result: I32 = value1 - value2
+            stack.push(value: Value(value: result))
         case .i32Mul:
             guard let c2Value = stack.pop(.number(.i32)),
                   let c1Value = stack.pop(.number(.i32)) else {
@@ -380,6 +390,11 @@ extension Runtime {
 
             let result: I64 = value1 + value2
             stack.push(value: Value(value: result))
+        case .i32Extend8S:
+            fatalError()
+        case .i32Extend16S:
+            fatalError()
+
         case .end:
             if !frame.isReachedEnd {
                 stack.popCurrentLabel()

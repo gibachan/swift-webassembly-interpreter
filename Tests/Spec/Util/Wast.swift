@@ -6,6 +6,7 @@
 //
 
 import Foundation
+@testable import WebAssemblyInterpreter
 
 struct Wast: Decodable {
     let sourceFilename: String
@@ -23,6 +24,7 @@ extension Wast {
         let line: Int
         let filename: String?
         let action: Action?
+        let expected: [Variable]?
     }
 
     enum CommandType: String, Decodable {
@@ -37,11 +39,31 @@ extension Wast {
         let type: String
         let field: String
         let args: [Variable]
-        let expected: [Variable]?
     }
 
     struct Variable: Decodable {
-        let type: String
-        let value: String
+        let type: VariableType
+        let value: String?
+    }
+
+    enum VariableType: String, Decodable {
+        case i32
+        case f32
+        case f64
+    }
+}
+
+extension Wast.Variable {
+    var i32: I32 {
+        switch type {
+        case .i32:
+            guard let value,
+                  let intValue = Int(value) else {
+                fatalError()
+            }
+            return I32(intValue % Int(Int32.max)) // TODO: Merge into app code
+        default:
+            fatalError()
+        }
     }
 }
