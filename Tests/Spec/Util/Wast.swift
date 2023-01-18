@@ -54,14 +54,14 @@ extension Wast {
 }
 
 extension Wast.Variable {
-    var i32: I32 {
+    var i32: Value {
         switch type {
         case .i32:
             guard let value,
                   let intValue = Int(value) else {
                 fatalError()
             }
-            return I32(intValue % Int(Int32.max)) // TODO: Merge into app code
+            return Value(i32: intValue)
         default:
             fatalError()
         }

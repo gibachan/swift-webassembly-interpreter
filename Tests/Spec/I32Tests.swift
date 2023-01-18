@@ -16,7 +16,7 @@ final class I32Tests: XCTestCase {
         }
 
         var wasm: Wasm!
-        wast.commands.prefix(3).forEach { command in
+        wast.commands.prefix(29).forEach { command in
             switch command.type {
             case .module:
                 wasm = testModule(command: command)

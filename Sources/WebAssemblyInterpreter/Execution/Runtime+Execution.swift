@@ -317,7 +317,7 @@ extension Runtime {
                 throw RuntimeError.invalidValueType
             }
 
-            let result: I32 = value1 + value2
+            let result = I32(truncatingIfNeeded: Int(value1) + Int(value2))
             stack.push(value: Value(i32: result))
         case .i32Sub:
             guard let c2Value = stack.pop(.number(.i32)),
@@ -329,7 +329,7 @@ extension Runtime {
                 throw RuntimeError.invalidValueType
             }
 
-            let result: I32 = value1 - value2
+            let result = I32(truncatingIfNeeded: Int(value1) - Int(value2))
             stack.push(value: Value(i32: result))
         case .i32Mul:
             guard let c2Value = stack.pop(.number(.i32)),
@@ -341,7 +341,7 @@ extension Runtime {
                 throw RuntimeError.invalidValueType
             }
 
-            let result: I32 = value1 * value2
+            let result = I32(truncatingIfNeeded: Int(value1) * Int(value2))
             stack.push(value: Value(i32: result))
         case .i32DivS:
             fatalError()

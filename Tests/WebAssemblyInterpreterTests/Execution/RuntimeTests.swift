@@ -51,6 +51,9 @@ final class RuntimeTests: XCTestCase {
         try runtime.invoke(moduleInstance: moduleInstance,
                            functionName: "AddInt", arguments: [Value(i32: 4294967295), .i32(0)], result: &result)
         XCTAssertEqual(result, .i32(-1))
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "AddInt", arguments: [Value(i32: 4294967295), Value(i32: 4294967295)], result: &result)
+        XCTAssertEqual(result, Value(i32: 4294967294))
     }
 
     func testAddIntI64() throws {

@@ -48,7 +48,7 @@ extension XCTestCase {
             let arguments: [Value] = action.args.compactMap { value in
                 switch value.type {
                 case .i32:
-                    return .i32(value.i32)
+                    return value.i32
                 default:
                     XCTFail("value type \(value.type) is not supported", file: file, line: line)
                     return nil
@@ -57,7 +57,7 @@ extension XCTestCase {
             let expected: [Value] = command.expected?.compactMap { value in
                 switch value.type {
                 case .i32:
-                    return .i32(value.i32)
+                    return value.i32
                 default:
                     XCTFail("value type \(value.type) is not supported", file: file, line: line)
                     return nil
@@ -70,7 +70,7 @@ extension XCTestCase {
                                functionName: action.field,
                                arguments: arguments,
                                result: &result)
-            XCTAssertEqual(result, expected.first, file: file, line: line)
+            XCTAssertEqual(result, expected.first, "command=\(command)", file: file, line: line)
         } catch {
             XCTFail("Failed for \(command.filename ?? "Unknown file"): \(error)", file: file, line: line)
         }
