@@ -35,11 +35,19 @@ public enum Value: Equatable {
         }
     }
     
-    init(value: I32) {
+    init(i32 value: Int) {
+        self = .i32(Int32(truncatingIfNeeded: value))
+    }
+
+    init(i32 value: I32) {
         self = .i32(value)
     }
 
-    init(value: I64) {
+    init(i64 value: Int) {
+        self = .i64(I64(Int64(truncatingIfNeeded: value)))
+    }
+
+    init(i64 value: I64) {
         self = .i64(value)
     }
     

@@ -251,7 +251,7 @@ extension Runtime {
             
         // Numeric Instructions
         case let .i32Const(value):
-            stack.push(value: Value(value: value))
+            stack.push(value: Value(i32: value))
         case .i64Const:
             fatalError()
         case .f32Const:
@@ -272,7 +272,7 @@ extension Runtime {
             }
             
             let result: I32 = value1 == value2 ? 1 : 0
-            stack.push(value: Value(value: result))
+            stack.push(value: Value(i32: result))
         case .i32Ne:
             fatalError()
         case .i32LtS:
@@ -300,7 +300,7 @@ extension Runtime {
             }
             
             let result: I32 = value1 >= value2 ? 1 : 0
-            stack.push(value: Value(value: result))
+            stack.push(value: Value(i32: result))
         case .i32Clz:
             fatalError()
         case .i32Ctz:
@@ -318,7 +318,7 @@ extension Runtime {
             }
 
             let result: I32 = value1 + value2
-            stack.push(value: Value(value: result))
+            stack.push(value: Value(i32: result))
         case .i32Sub:
             guard let c2Value = stack.pop(.number(.i32)),
                   let c1Value = stack.pop(.number(.i32)) else {
@@ -330,7 +330,7 @@ extension Runtime {
             }
 
             let result: I32 = value1 - value2
-            stack.push(value: Value(value: result))
+            stack.push(value: Value(i32: result))
         case .i32Mul:
             guard let c2Value = stack.pop(.number(.i32)),
                   let c1Value = stack.pop(.number(.i32)) else {
@@ -342,7 +342,7 @@ extension Runtime {
             }
 
             let result: I32 = value1 * value2
-            stack.push(value: Value(value: result))
+            stack.push(value: Value(i32: result))
         case .i32DivS:
             fatalError()
         case .i32DivU:
@@ -360,7 +360,7 @@ extension Runtime {
             }
             
             let result: I32 = value1 % value2
-            stack.push(value: Value(value: result))
+            stack.push(value: Value(i32: result))
         case .i32And:
             fatalError()
         case .i32Or:
@@ -389,7 +389,7 @@ extension Runtime {
             }
 
             let result: I64 = value1 + value2
-            stack.push(value: Value(value: result))
+            stack.push(value: Value(i64: result))
         case .i32Extend8S:
             fatalError()
         case .i32Extend16S:

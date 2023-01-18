@@ -153,9 +153,9 @@ extension Runtime {
                     }
                     switch value {
                     case let .i32(value):
-                        locals.insert(Value(value: value), at: 0)
+                        locals.insert(Value(i32: value), at: 0)
                     case let .i64(value):
-                        locals.insert(Value(value: value), at: 0)
+                        locals.insert(Value(i64: value), at: 0)
                     case let .f32(value):
                         locals.insert(Value(value: value), at: 0)
                     case let .f64(value):

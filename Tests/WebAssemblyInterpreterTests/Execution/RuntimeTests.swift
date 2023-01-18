@@ -48,11 +48,9 @@ final class RuntimeTests: XCTestCase {
         try runtime.invoke(moduleInstance: moduleInstance,
                            functionName: "AddInt", arguments: [.i32(2147483646), .i32(1)], result: &result)
         XCTAssertEqual(result, .i32(2147483647))
-
-        // Overflow
-//        try runtime.invoke(moduleInstance: moduleInstance,
-//                           functionName: "AddInt", arguments: [.i32(2147483646), .i32(2)], result: &result)
-//        XCTAssertEqual(result, .i32(-2147483648))
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "AddInt", arguments: [Value(i32: 4294967295), .i32(0)], result: &result)
+        XCTAssertEqual(result, .i32(-1))
     }
 
     func testAddIntI64() throws {
