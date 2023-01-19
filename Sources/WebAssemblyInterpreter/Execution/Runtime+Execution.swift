@@ -344,11 +344,41 @@ extension Runtime {
             let result = I32(truncatingIfNeeded: Int(value1) * Int(value2))
             stack.push(value: Value(i32: result))
         case .i32DivS:
-            fatalError()
+            guard let c2Value = stack.pop(.number(.i32)),
+                  let c1Value = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value1) = c1Value,
+                  case .i32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result = I32(truncatingIfNeeded: Int(value1) / Int(value2))
+            stack.push(value: Value(i32: result))
         case .i32DivU:
-            fatalError()
+            guard let c2Value = stack.pop(.number(.i32)),
+                  let c1Value = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value1) = c1Value,
+                  case .i32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result = I32(truncatingIfNeeded: U32(truncatingIfNeeded: value1) / U32(truncatingIfNeeded: value2))
+            stack.push(value: Value(i32: result))
         case .i32RemS:
-            fatalError()
+            guard let c2Value = stack.pop(.number(.i32)),
+                  let c1Value = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value1) = c1Value,
+                  case .i32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result = I32(truncatingIfNeeded: Int(value1) % Int(value2))
+            stack.push(value: Value(i32: result))
         case .i32RemU:
             guard let c2Value = stack.pop(.number(.i32)),
                   let c1Value = stack.pop(.number(.i32)) else {
@@ -359,7 +389,7 @@ extension Runtime {
                 throw RuntimeError.invalidValueType
             }
             
-            let result: I32 = value1 % value2
+            let result = I32(truncatingIfNeeded: U32(truncatingIfNeeded: value1) % U32(truncatingIfNeeded: value2))
             stack.push(value: Value(i32: result))
         case .i32And:
             fatalError()
