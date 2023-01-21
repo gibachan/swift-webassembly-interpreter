@@ -392,19 +392,92 @@ extension Runtime {
             let result = I32(truncatingIfNeeded: U32(truncatingIfNeeded: value1) % U32(truncatingIfNeeded: value2))
             stack.push(value: Value(i32: result))
         case .i32And:
-            fatalError()
+            guard let c2Value = stack.pop(.number(.i32)),
+                  let c1Value = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value1) = c1Value,
+                  case .i32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result = I32(truncatingIfNeeded: U32(truncatingIfNeeded: value1) & U32(truncatingIfNeeded: value2))
+            stack.push(value: Value(i32: result))
         case .i32Or:
-            fatalError()
+            guard let c2Value = stack.pop(.number(.i32)),
+                  let c1Value = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value1) = c1Value,
+                  case .i32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result = I32(truncatingIfNeeded: U32(truncatingIfNeeded: value1) | U32(truncatingIfNeeded: value2))
+            stack.push(value: Value(i32: result))
         case .i32Xor:
-            fatalError()
+            guard let c2Value = stack.pop(.number(.i32)),
+                  let c1Value = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value1) = c1Value,
+                  case .i32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result = I32(truncatingIfNeeded: U32(truncatingIfNeeded: value1) ^ U32(truncatingIfNeeded: value2))
+            stack.push(value: Value(i32: result))
         case .i32Shl:
-            fatalError()
+            guard let c2Value = stack.pop(.number(.i32)),
+                  let c1Value = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value1) = c1Value,
+                  case .i32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result = I32(truncatingIfNeeded: value1 << value2.shiftMask)
+            stack.push(value: Value(i32: result))
         case .i32ShrS:
-            fatalError()
+            guard let c2Value = stack.pop(.number(.i32)),
+                  let c1Value = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value1) = c1Value,
+                  case .i32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result = I32(truncatingIfNeeded: value1 >> value2.shiftMask)
+            stack.push(value: Value(i32: result))
         case .i32ShrU:
-            fatalError()
+            guard let c2Value = stack.pop(.number(.i32)),
+                  let c1Value = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value1) = c1Value,
+                  case .i32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result = I32(truncatingIfNeeded: U32(truncatingIfNeeded: value1) >> U32(truncatingIfNeeded: value2).shiftMask)
+            stack.push(value: Value(i32: result))
         case .i32Rotl:
             fatalError()
+            guard let c2Value = stack.pop(.number(.i32)),
+                  let c1Value = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value1) = c1Value,
+                  case .i32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+//            return (lhs << ShiftMask(rhs)) | (lhs >> ShiftMask<T>(0 - rhs));
+
+
+            let result = I32(truncatingIfNeeded: (value1 << value2.shiftMask) |    (value1 >> (0 - value2).shiftMask))
+            stack.push(value: Value(i32: result))
         case .i32Rotr:
             fatalError()
 
