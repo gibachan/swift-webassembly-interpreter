@@ -138,8 +138,13 @@ extension BinarySource {
             consumedByteCount += 1
             bytes.append(byte)
             
-            if ((byte & 0x80) == 0) {
-                return try? Int32(signedLEB128: Data(bytes))
+            if ((byte & 0x80) == 0),
+               let signed = try? Int32(signedLEB128: Data(bytes)) {
+                if signed >= 0 {
+                    return I32(signed)
+                } else {
+                    return I32(UInt32.max - UInt32(-(signed + 1)))
+                }
             }
         } while currentIndex < endIndex
         return nil

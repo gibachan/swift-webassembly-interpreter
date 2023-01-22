@@ -10,7 +10,7 @@ public struct Demo {
         }
 
         let filePath = CommandLine.arguments[1]
-        guard let inputValue = Int32(CommandLine.arguments[2]) else {
+        guard let inputValue = I32(CommandLine.arguments[2]) else {
             print("Input value is not specified.")
             return
         }

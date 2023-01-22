@@ -302,11 +302,35 @@ extension Runtime {
             let result: I32 = value1 >= value2 ? 1 : 0
             stack.push(value: Value(i32: result))
         case .i32Clz:
-            fatalError()
+            guard let cValue = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value) = cValue else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result: I32 = I32(value.leadingZeroBitCount)
+            stack.push(value: Value(i32: result))
         case .i32Ctz:
-            fatalError()
+            guard let cValue = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value) = cValue else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result: I32 = I32(value.trailingZeroBitCount)
+            stack.push(value: Value(i32: result))
         case .i32Popcnt:
-            fatalError()
+            guard let cValue = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value) = cValue else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result: I32 = I32(value.nonzeroBitCount)
+            stack.push(value: Value(i32: result))
         case .i32Add:
             guard let c2Value = stack.pop(.number(.i32)),
                   let c1Value = stack.pop(.number(.i32)) else {
@@ -317,8 +341,7 @@ extension Runtime {
                 throw RuntimeError.invalidValueType
             }
 
-            let result = I32(truncatingIfNeeded: Int(value1) + Int(value2))
-            stack.push(value: Value(i32: result))
+            stack.push(value: Value(i32: value1 &+ value2))
         case .i32Sub:
             guard let c2Value = stack.pop(.number(.i32)),
                   let c1Value = stack.pop(.number(.i32)) else {
@@ -329,8 +352,7 @@ extension Runtime {
                 throw RuntimeError.invalidValueType
             }
 
-            let result = I32(truncatingIfNeeded: Int(value1) - Int(value2))
-            stack.push(value: Value(i32: result))
+            stack.push(value: Value(i32: value1 &- value2))
         case .i32Mul:
             guard let c2Value = stack.pop(.number(.i32)),
                   let c1Value = stack.pop(.number(.i32)) else {
@@ -341,8 +363,7 @@ extension Runtime {
                 throw RuntimeError.invalidValueType
             }
 
-            let result = I32(truncatingIfNeeded: Int(value1) * Int(value2))
-            stack.push(value: Value(i32: result))
+            stack.push(value: Value(i32: value1 &* value2))
         case .i32DivS:
             guard let c2Value = stack.pop(.number(.i32)),
                   let c1Value = stack.pop(.number(.i32)) else {
@@ -353,7 +374,7 @@ extension Runtime {
                 throw RuntimeError.invalidValueType
             }
 
-            let result = I32(truncatingIfNeeded: Int(value1) / Int(value2))
+            let result = I32(truncatingIfNeeded: value1.signed / value2.signed)
             stack.push(value: Value(i32: result))
         case .i32DivU:
             guard let c2Value = stack.pop(.number(.i32)),
@@ -377,7 +398,8 @@ extension Runtime {
                 throw RuntimeError.invalidValueType
             }
 
-            let result = I32(truncatingIfNeeded: Int(value1) % Int(value2))
+            let remainder = value1.signed.remainderReportingOverflow(dividingBy: value2.signed)
+            let result = I32(truncatingIfNeeded: remainder.partialValue)
             stack.push(value: Value(i32: result))
         case .i32RemU:
             guard let c2Value = stack.pop(.number(.i32)),
@@ -449,7 +471,7 @@ extension Runtime {
                 throw RuntimeError.invalidValueType
             }
 
-            let result = I32(truncatingIfNeeded: value1 >> value2.shiftMask)
+            let result = I32(truncatingIfNeeded: value1.signed >> value2.signed.shiftMask)
             stack.push(value: Value(i32: result))
         case .i32ShrU:
             guard let c2Value = stack.pop(.number(.i32)),
@@ -464,7 +486,6 @@ extension Runtime {
             let result = I32(truncatingIfNeeded: U32(truncatingIfNeeded: value1) >> U32(truncatingIfNeeded: value2).shiftMask)
             stack.push(value: Value(i32: result))
         case .i32Rotl:
-            fatalError()
             guard let c2Value = stack.pop(.number(.i32)),
                   let c1Value = stack.pop(.number(.i32)) else {
                 throw RuntimeError.invalidValueType
@@ -473,14 +494,23 @@ extension Runtime {
                   case .i32(let value2) = c2Value else {
                 throw RuntimeError.invalidValueType
             }
-//            return (lhs << ShiftMask(rhs)) | (lhs >> ShiftMask<T>(0 - rhs));
 
-
-            let result = I32(truncatingIfNeeded: (value1 << value2.shiftMask) |    (value1 >> (0 - value2).shiftMask))
+            let shift = value2 % UInt32(UInt32.bitWidth)
+            let result = value1 << shift | value1 >> (UInt32(UInt32.bitWidth) - shift)
             stack.push(value: Value(i32: result))
         case .i32Rotr:
-            fatalError()
+            guard let c2Value = stack.pop(.number(.i32)),
+                  let c1Value = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value1) = c1Value,
+                  case .i32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
 
+            let shift = value2 % UInt32(UInt32.bitWidth)
+            let result = value1 >> shift | value1 << (UInt32(UInt32.bitWidth) - shift)
+            stack.push(value: Value(i32: result))
         case .i64Add:
             guard let c2Value = stack.pop(.number(.i64)),
                   let c1Value = stack.pop(.number(.i64)) else {
@@ -497,7 +527,6 @@ extension Runtime {
             fatalError()
         case .i32Extend16S:
             fatalError()
-
         case .end:
             if !frame.isReachedEnd {
                 stack.popCurrentLabel()

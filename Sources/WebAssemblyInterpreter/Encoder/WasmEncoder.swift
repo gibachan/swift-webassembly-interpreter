@@ -514,7 +514,7 @@ private extension WasmEncoder {
                 }
 
             case let .i32Const(value):
-                value.signedLEB128.forEach {
+                value.signed.signedLEB128.forEach {
                     bytes.append($0)
                 }
 
