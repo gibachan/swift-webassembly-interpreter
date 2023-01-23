@@ -16,7 +16,7 @@ public struct FizzBuzz {
             return
         }
 
-        guard let inputValue = Int32(CommandLine.arguments[1]) else {
+        guard let inputValue = Int(CommandLine.arguments[1]) else {
             print("Input value is not specified.")
             return
         }
@@ -60,7 +60,7 @@ public struct FizzBuzz {
             }
             let moduleInstance = runtime.instanciate(module: wasm.module, hostEnvironment: hostEnvironment)
             try runtime.invoke(moduleInstance: moduleInstance,
-                               functionName: "fizzbuzz", arguments: [.i32(inputValue)], result: &result)
+                               functionName: "fizzbuzz", arguments: [.init(i32: inputValue)], result: &result)
         } catch {
             print("Failed to parse wasm: \(filePath)")
         }

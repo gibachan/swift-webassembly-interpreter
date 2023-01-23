@@ -35,7 +35,7 @@ public enum Value: Equatable {
         }
     }
     
-    init(i32 value: Int) {
+    public init(i32 value: Int) {
         self = .i32(I32(truncatingIfNeeded: value))
     }
 
@@ -43,7 +43,7 @@ public enum Value: Equatable {
         self = .i32(value)
     }
 
-    init(i64 value: Int) {
+    public init(i64 value: Int) {
         self = .i64(I64(truncatingIfNeeded: value))
     }
 
