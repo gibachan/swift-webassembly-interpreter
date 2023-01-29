@@ -259,7 +259,15 @@ extension Runtime {
         case .f64Const:
             fatalError()
         case .i32Eqz:
-            fatalError()
+            guard let cValue = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value) = cValue else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result: I32 = value == 0 ? 1 : 0
+            stack.push(value: Value(i32: result))
         case .i32Eq:
             // https://webassembly.github.io/spec/core/exec/numerics.html#xref-exec-numerics-op-ieq-mathrm-ieq-n-i-1-i-2
             guard let c2Value = stack.pop(.number(.i32)),
@@ -274,21 +282,101 @@ extension Runtime {
             let result: I32 = value1 == value2 ? 1 : 0
             stack.push(value: Value(i32: result))
         case .i32Ne:
-            fatalError()
+            guard let c2Value = stack.pop(.number(.i32)),
+                  let c1Value = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value1) = c1Value,
+                  case .i32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result: I32 = value1 != value2 ? 1 : 0
+            stack.push(value: Value(i32: result))
         case .i32LtS:
-            fatalError()
+            guard let c2Value = stack.pop(.number(.i32)),
+                  let c1Value = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value1) = c1Value,
+                  case .i32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result: I32 = value1.signed < value2.signed ? 1 : 0
+            stack.push(value: Value(i32: result))
         case .i32LtU:
-            fatalError()
+            guard let c2Value = stack.pop(.number(.i32)),
+                  let c1Value = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value1) = c1Value,
+                  case .i32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result: I32 = value1 < value2 ? 1 : 0
+            stack.push(value: Value(i32: result))
         case .i32GtS:
-            fatalError()
+            guard let c2Value = stack.pop(.number(.i32)),
+                  let c1Value = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value1) = c1Value,
+                  case .i32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result: I32 = value1.signed > value2.signed ? 1 : 0
+            stack.push(value: Value(i32: result))
         case .i32GtU:
-            fatalError()
+            guard let c2Value = stack.pop(.number(.i32)),
+                  let c1Value = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value1) = c1Value,
+                  case .i32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result: I32 = value1 > value2 ? 1 : 0
+            stack.push(value: Value(i32: result))
         case .i32LeS:
-            fatalError()
+            guard let c2Value = stack.pop(.number(.i32)),
+                  let c1Value = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value1) = c1Value,
+                  case .i32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result: I32 = value1.signed <= value2.signed ? 1 : 0
+            stack.push(value: Value(i32: result))
         case .i32LeU:
-            fatalError()
+            guard let c2Value = stack.pop(.number(.i32)),
+                  let c1Value = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value1) = c1Value,
+                  case .i32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result: I32 = value1 <= value2 ? 1 : 0
+            stack.push(value: Value(i32: result))
         case .i32GeS:
-            fatalError()
+            guard let c2Value = stack.pop(.number(.i32)),
+                  let c1Value = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value1) = c1Value,
+                  case .i32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result: I32 = value1.signed >= value2.signed ? 1 : 0
+            stack.push(value: Value(i32: result))
         case .i32GeU:
             guard let c2Value = stack.pop(.number(.i32)),
                   let c1Value = stack.pop(.number(.i32)) else {
@@ -524,9 +612,27 @@ extension Runtime {
             let result: I64 = value1 + value2
             stack.push(value: Value(i64: result))
         case .i32Extend8S:
-            fatalError()
+            guard let cValue = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value) = cValue else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let extended = (value.signed << 24) >> 24
+            let result = I32(truncatingIfNeeded: extended)
+            stack.push(value: Value(i32: result))
         case .i32Extend16S:
-            fatalError()
+            guard let cValue = stack.pop(.number(.i32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .i32(let value) = cValue else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let extended = (value.signed << 16) >> 16
+            let result = I32(truncatingIfNeeded: extended)
+            stack.push(value: Value(i32: result))
         case .end:
             if !frame.isReachedEnd {
                 stack.popCurrentLabel()
