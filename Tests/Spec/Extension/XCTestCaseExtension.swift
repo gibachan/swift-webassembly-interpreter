@@ -49,6 +49,8 @@ extension XCTestCase {
                 switch value.type {
                 case .i32:
                     return value.i32
+                case .i64:
+                    return value.i64
                 default:
                     XCTFail("value type \(value.type) is not supported", file: file, line: line)
                     return nil
@@ -58,6 +60,8 @@ extension XCTestCase {
                 switch value.type {
                 case .i32:
                     return value.i32
+                case .i64:
+                    return value.i64
                 default:
                     XCTFail("value type \(value.type) is not supported", file: file, line: line)
                     return nil

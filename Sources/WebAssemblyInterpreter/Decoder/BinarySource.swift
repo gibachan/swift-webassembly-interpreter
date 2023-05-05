@@ -149,4 +149,29 @@ extension BinarySource {
         } while currentIndex < endIndex
         return nil
     }
+
+    @discardableResult
+    func consumeI64() -> I64? {
+        var consumedByteCount = 0
+        var bytes: [Byte] = []
+        repeat {
+            guard let data = consume(1),
+                  let byte = data.first else {
+                return nil
+            }
+
+            consumedByteCount += 1
+            bytes.append(byte)
+
+            if ((byte & 0x80) == 0),
+               let signed = try? Int32(signedLEB128: Data(bytes)) {
+                if signed >= 0 {
+                    return I64(signed)
+                } else {
+                    return I64(UInt64.max - UInt64(-(signed + 1)))
+                }
+            }
+        } while currentIndex < endIndex
+        return nil
+    }
 }

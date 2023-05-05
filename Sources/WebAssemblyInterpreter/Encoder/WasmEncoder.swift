@@ -481,6 +481,20 @@ private extension WasmEncoder {
                 labelIndex.unsignedLEB128.forEach {
                     bytes.append($0)
                 }
+            case let .brTable(labelTable, defaultLabel):
+                // TODO: Unit test
+                labelTable.length.unsignedLEB128.forEach {
+                    bytes.append($0)
+                }
+                labelTable.elements.forEach { labelIndex in
+                    labelIndex.unsignedLEB128.forEach {
+                        bytes.append($0)
+                    }
+                }
+                defaultLabel.unsignedLEB128.forEach {
+                    bytes.append($0)
+                }
+
             case let .call(functionIndex):
                 functionIndex.unsignedLEB128.forEach {
                     bytes.append($0)
@@ -525,6 +539,8 @@ private extension WasmEncoder {
             // Parametric Instructions
             case .drop:
                 break
+            case .select:
+                break
 
             // Variable Instructions
             case .f32Add, .f32Div, .f64Add:
@@ -552,11 +568,13 @@ private extension WasmEncoder {
                 break
             case .i32Eqz, .i32Eq, .i32Ne, .i32LtS, .i32LtU, .i32GtS, .i32GtU, .i32LeS, .i32LeU, .i32GeS, .i32GeU:
                 break
+            case .i64Eqz, .i64Eq, .i64Ne, .i64LtS, .i64LtU, .i64GtS, .i64GtU, .i64LeS, .i64LeU, .i64GeS, .i64GeU:
+                break
             case .i32Clz, .i32Ctz, .i32Popcnt, .i32Add, .i32Sub, .i32Mul, .i32DivS, .i32DivU, .i32RemS, .i32RemU, .i32And, .i32Or, .i32Xor, .i32Shl, .i32ShrS, .i32ShrU, .i32Rotl, .i32Rotr:
                 break
-            case .i64Add:
+            case .i64Clz, .i64Ctz, .i64Popcnt, .i64Add, .i64Sub, .i64Mul, .i64DivS, .i64DivU, .i64RemS, .i64RemU, .i64And, .i64Or, .i64Xor, .i64Shl, .i64ShrS, .i64ShrU, .i64Rotl, .i64Rotr:
                 break
-            case .i32Extend8S, .i32Extend16S:
+            case .i32Extend8S, .i32Extend16S, .i64Extend8S, .i64Extend16S, .i64Extend32S:
                 break
             // Expressions
             case .end:
@@ -572,6 +590,9 @@ private extension WasmEncoder {
             return [BlockType.emptyByte]
         case let .value(valueType):
             return encodeValueType(valueType)
+        case let .typeIndex(typeIndex):
+            // TODO: Add unit test
+            return typeIndex.unsignedLEB128.map { $0 }
         }
     }
     

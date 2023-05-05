@@ -20,6 +20,7 @@ enum Instruction {
     case `else`
     case br(LabelIndex)
     case brIf(LabelIndex)
+    case brTable(Vector<LabelIndex>, LabelIndex)
     case `return`
     case call(FunctionIndex)
     case callIndirect(TypeIndex, TableIndex)
@@ -27,6 +28,7 @@ enum Instruction {
     // Parametric Instructions
     // https://webassembly.github.io/spec/core/binary/instructions.html#parametric-instructions
     case drop
+    case select
 
     // Variable Instructions
     // https://webassembly.github.io/spec/core/binary/instructions.html#variable-instructions
@@ -48,7 +50,7 @@ enum Instruction {
     // Numeric Instructions
     // https://webassembly.github.io/spec/core/binary/instructions.html#variable-instructions
     case i32Const(I32)
-    case i64Const
+    case i64Const(I64)
     case f32Const
     case f64Const
     
@@ -63,6 +65,18 @@ enum Instruction {
     case i32LeU
     case i32GeS
     case i32GeU
+
+    case i64Eqz
+    case i64Eq
+    case i64Ne
+    case i64LtS
+    case i64LtU
+    case i64GtS
+    case i64GtU
+    case i64LeS
+    case i64LeU
+    case i64GeS
+    case i64GeU
     
     case i32Clz
     case i32Ctz
@@ -83,10 +97,30 @@ enum Instruction {
     case i32Rotl
     case i32Rotr
 
+    case i64Clz
+    case i64Ctz
+    case i64Popcnt
     case i64Add
+    case i64Sub
+    case i64Mul
+    case i64DivS
+    case i64DivU
+    case i64RemS
+    case i64RemU
+    case i64And
+    case i64Or
+    case i64Xor
+    case i64Shl
+    case i64ShrS
+    case i64ShrU
+    case i64Rotl
+    case i64Rotr
 
     case i32Extend8S
     case i32Extend16S
+    case i64Extend8S
+    case i64Extend16S
+    case i64Extend32S
 
     // Expressions
     // https://webassembly.github.io/spec/core/binary/instructions.html#expressions
@@ -105,6 +139,7 @@ extension Instruction {
         case `else` = 0x05
         case br = 0x0C
         case brIf = 0x0D
+        case brTable = 0x0E
         case `return` = 0x0F
         case call = 0x10
         case callIndirect = 0x11
@@ -112,6 +147,7 @@ extension Instruction {
         // Parametric Instructions
         // https://webassembly.github.io/spec/core/binary/instructions.html#parametric-instructions
         case drop = 0x1A
+        case select = 0x1B
         
         // Variable Instructions
         // https://webassembly.github.io/spec/core/binary/instructions.html#variable-instructions
@@ -150,6 +186,18 @@ extension Instruction {
         case i32GeS = 0x4E
         case i32GeU = 0x4F
 
+        case i64Eqz = 0x50
+        case i64Eq = 0x51
+        case i64Ne = 0x52
+        case i64LtS = 0x53
+        case i64LtU = 0x54
+        case i64GtS = 0x55
+        case i64GtU = 0x56
+        case i64LeS = 0x57
+        case i64LeU = 0x58
+        case i64GeS = 0x59
+        case i64GeU = 0x5A
+
         case i32Clz = 0x67
         case i32Ctz = 0x68
         case i32Popcnt = 0x69
@@ -169,10 +217,30 @@ extension Instruction {
         case i32Rotl = 0x77
         case i32Rotr = 0x78
 
+        case i64Clz = 0x79
+        case i64Ctz = 0x7A
+        case i64Popcnt = 0x7B
         case i64Add = 0x7C
+        case i64Sub = 0x7D
+        case i64Mul = 0x7E
+        case i64DivS = 0x7F
+        case i64DivU = 0x80
+        case i64RemS = 0x81
+        case i64RemU = 0x82
+        case i64And = 0x83
+        case i64Or = 0x84
+        case i64Xor = 0x85
+        case i64Shl = 0x86
+        case i64ShrS = 0x87
+        case i64ShrU = 0x88
+        case i64Rotl = 0x89
+        case i64Rotr = 0x8A
 
         case i32Extend8S = 0xC0
         case i32Extend16S = 0xC1
+        case i64Extend8S = 0xC2
+        case i64Extend16S = 0xC3
+        case i64Extend32S = 0xC4
 
         // Expressions
         // https://webassembly.github.io/spec/core/binary/instructions.html#expressions
@@ -189,12 +257,14 @@ extension Instruction {
         case .else: return .else
         case .br: return .br
         case .brIf: return .brIf
+        case .brTable: return .brTable
         case .return: return .return
         case .call: return .call
         case .callIndirect: return .callIndirect
             
         // Parametric Instructions
         case .drop: return .drop
+        case .select: return .select
             
         // Variable Instructions
         case .localGet: return .localGet
@@ -228,6 +298,18 @@ extension Instruction {
         case .i32GeS: return .i32GeS
         case .i32GeU: return .i32GeU
 
+        case .i64Eqz: return .i64Eqz
+        case .i64Eq: return .i64Eq
+        case .i64Ne: return .i64Ne
+        case .i64LtS: return .i64LtS
+        case .i64LtU: return .i64LtU
+        case .i64GtS: return .i64GtS
+        case .i64GtU: return .i64GtU
+        case .i64LeS: return .i64LeS
+        case .i64LeU: return .i64LeU
+        case .i64GeS: return .i64GeS
+        case .i64GeU: return .i64GeU
+
         case .i32Clz: return .i32Clz
         case .i32Ctz: return .i32Ctz
         case .i32Popcnt: return .i32Popcnt
@@ -247,10 +329,30 @@ extension Instruction {
         case .i32Rotl: return .i32Rotl
         case .i32Rotr: return .i32Rotr
             
+        case .i64Clz: return .i64Clz
+        case .i64Ctz: return .i64Ctz
+        case .i64Popcnt: return .i64Popcnt
         case .i64Add: return .i64Add
+        case .i64Sub: return .i64Sub
+        case .i64Mul: return .i64Mul
+        case .i64DivS: return .i64DivS
+        case .i64DivU: return .i64DivU
+        case .i64RemS: return .i64RemS
+        case .i64RemU: return .i64RemU
+        case .i64And: return .i64And
+        case .i64Or: return .i64Or
+        case .i64Xor: return .i64Xor
+        case .i64Shl: return .i64Shl
+        case .i64ShrS: return .i64ShrS
+        case .i64ShrU: return .i64ShrU
+        case .i64Rotl: return .i64Rotl
+        case .i64Rotr: return .i64Rotr
 
         case .i32Extend8S: return .i32Extend8S
         case .i32Extend16S: return .i32Extend16S
+        case .i64Extend8S: return .i64Extend8S
+        case .i64Extend16S: return .i64Extend16S
+        case .i64Extend32S: return .i64Extend32S
 
         case .f32Div: return .f32Div
             

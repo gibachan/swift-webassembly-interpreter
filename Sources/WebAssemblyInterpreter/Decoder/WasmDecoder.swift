@@ -650,7 +650,7 @@ private extension WasmDecoder {
                 throw WasmDecodeError.illegalExpression
             }
             
-//            print("instructionID=\(instructionID)")
+            print("instructionID=\(instructionID)")
             
             let instruction: Instruction
             switch instructionID {
@@ -680,6 +680,18 @@ private extension WasmDecoder {
                     throw WasmDecodeError.illegalExpression
                 }
                 instruction = .brIf(index)
+            case .brTable:
+                let labelTable: Vector<LabelIndex> = try decodeVector {
+                    guard let index = source.consumeU32() else {
+                        throw WasmDecodeError.illegalExpression
+                    }
+                    return index
+                }
+                guard let defaultIndex = source.consumeU32() else {
+                    throw WasmDecodeError.illegalExpression
+                }
+                instruction = .brTable(labelTable, defaultIndex)
+
             case .return:
                 instruction = .return
             case .call:
@@ -699,6 +711,8 @@ private extension WasmDecoder {
             // Parametric Instructions
             case .drop:
                 instruction = .drop
+            case .select:
+                instruction = .select
                 
             // Variable Instructions
             case .localGet:
@@ -761,7 +775,10 @@ private extension WasmDecoder {
                 }
                 instruction = .i32Const(value)
             case .i64Const:
-                instruction = .end // Temporary
+                guard let value = source.consumeI64() else {
+                    throw WasmDecodeError.illegalExpression
+                }
+                instruction = .i64Const(value)
             case .f32Const:
                 instruction = .end // Temporary
             case .f64Const:
@@ -789,6 +806,29 @@ private extension WasmDecoder {
                 instruction = .i32GeS
             case .i32GeU:
                 instruction = .i32GeU
+
+            case .i64Eqz:
+                instruction = .i64Eqz
+            case .i64Eq:
+                instruction = .i64Eq
+            case .i64Ne:
+                instruction = .i64Ne
+            case .i64LtS:
+                instruction = .i64LtS
+            case .i64LtU:
+                instruction = .i64LtU
+            case .i64GtS:
+                instruction = .i64GtS
+            case .i64GtU:
+                instruction = .i64GtU
+            case .i64LeS:
+                instruction = .i64LeS
+            case .i64LeU:
+                instruction = .i64LeU
+            case .i64GeS:
+                instruction = .i64GeS
+            case .i64GeU:
+                instruction = .i64GeU
 
             case .i32Clz:
                 instruction = .i32Clz
@@ -827,13 +867,53 @@ private extension WasmDecoder {
             case .i32Rotr:
                 instruction = .i32Rotr
 
+            case .i64Clz:
+                instruction = .i64Clz
+            case .i64Ctz:
+                instruction = .i64Ctz
+            case .i64Popcnt:
+                instruction = .i64Popcnt
             case .i64Add:
                 instruction = .i64Add
+            case .i64Sub:
+                instruction = .i64Sub
+            case .i64Mul:
+                instruction = .i64Mul
+            case .i64DivS:
+                instruction = .i64DivS
+            case .i64DivU:
+                instruction = .i64DivU
+            case .i64RemS:
+                instruction = .i64RemS
+            case .i64RemU:
+                instruction = .i64RemU
+            case .i64And:
+                instruction = .i64And
+            case .i64Or:
+                instruction = .i64Or
+            case .i64Xor:
+                instruction = .i64Xor
+            case .i64Shl:
+                instruction = .i64Shl
+            case .i64ShrS:
+                instruction = .i64ShrS
+            case .i64ShrU:
+                instruction = .i64ShrU
+            case .i64Rotl:
+                instruction = .i64Rotl
+            case .i64Rotr:
+                instruction = .i64Rotr
 
             case .i32Extend8S:
                 instruction = .i32Extend8S
             case .i32Extend16S:
                 instruction = .i32Extend16S
+            case .i64Extend8S:
+                instruction = .i64Extend8S
+            case .i64Extend16S:
+                instruction = .i64Extend16S
+            case .i64Extend32S:
+                instruction = .i64Extend32S
 
             // Expressions
             case .end:
@@ -895,19 +975,33 @@ private extension WasmDecoder {
     }
     
     func decodeBlockType() throws -> BlockType {
-        guard let value = source.consume() else {
+        guard let value = source.current else {
             throw WasmDecodeError.illegalBlockType
         }
 
+        // Empty type?
         if value == BlockType.emptyByte {
+            source.consume()
             return .empty
         }
-        
+
+        // Single Value type?
         if let valueType = ValueType.from(byte: value) {
+            source.consume()
             return .value(valueType)
         }
 
-        throw WasmDecodeError.illegalBlockType
+        // Type index?
+        // Unlike any other occurrence, the type index in a block type is encoded as a positive signed integer,
+        // so that its signed LEB128 bit pattern cannot collide with the encoding of value types or the special code,
+        // which correspond to the LEB128 encoding of negative integers.
+        // To avoid any loss in the range of allowed indices, it is treated as a 33 bit signed integer.
+        guard let typeIndex = source.consumeI32() else {
+            throw WasmDecodeError.illegalBlockType
+        }
+
+        return .typeIndex(typeIndex)
+
     }
     
     func decodeValueType() throws -> ValueType {

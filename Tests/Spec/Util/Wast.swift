@@ -48,6 +48,7 @@ extension Wast {
 
     enum VariableType: String, Decodable {
         case i32
+        case i64
         case f32
         case f64
     }
@@ -58,10 +59,23 @@ extension Wast.Variable {
         switch type {
         case .i32:
             guard let value,
-                  let intValue = Int(value) else {
+                  let intValue = I32(value) else {
                 fatalError()
             }
             return Value(i32: intValue)
+        default:
+            fatalError()
+        }
+    }
+    var i64: Value {
+        switch type {
+        case .i64:
+            guard let value,
+                  let intValue = I64(value) else {
+                print("value=\(value)")
+                fatalError()
+            }
+            return Value(i64: intValue)
         default:
             fatalError()
         }

@@ -11,13 +11,13 @@ import Foundation
 enum BlockType {
     case empty
     case value(ValueType)
-    // TODO: Support type index
-    //    case typeIndex
+    case typeIndex(TypeIndex)
     
     var arity: Int {
         switch self {
         case .empty: return 0
         case .value: return 1
+        case .typeIndex: return 2
         }
     }
 }
