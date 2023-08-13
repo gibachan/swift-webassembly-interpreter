@@ -749,6 +749,7 @@ private extension WasmDecoder {
 
             // Memory Instructions
             case .i32Load:
+                // TODO: Make decoding memory argument as a private function
                 // Is the order of align and offset correct?
                 guard let align = source.consumeU32(),
                       let offset = source.consumeU32() else {
@@ -757,6 +758,15 @@ private extension WasmDecoder {
                 let memoryArgument = MemoryArgument(offset: offset,
                                                     align: align)
                 instruction = .i32Load(memoryArgument)
+            case .i32Store:
+                // Is the order of align and offset correct?
+                guard let align = source.consumeU32(),
+                      let offset = source.consumeU32() else {
+                    throw WasmDecodeError.illegalExpression
+                }
+                let memoryArgument = MemoryArgument(offset: offset,
+                                                    align: align)
+                instruction = .i32Store(memoryArgument)
             case .dataDrop:
                 guard let const = source.consumeU32(),
                       const == 9 else {

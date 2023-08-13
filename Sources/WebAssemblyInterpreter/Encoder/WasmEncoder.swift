@@ -548,6 +548,14 @@ private extension WasmEncoder {
                 
             // Memory Instructions
             case let .i32Load(memoryArgument):
+                // TODO: Make encoding memory argument as a private function
+                memoryArgument.align.unsignedLEB128.forEach {
+                    bytes.append($0)
+                }
+                memoryArgument.offset.unsignedLEB128.forEach {
+                    bytes.append($0)
+                }
+            case let .i32Store(memoryArgument):
                 memoryArgument.align.unsignedLEB128.forEach {
                     bytes.append($0)
                 }

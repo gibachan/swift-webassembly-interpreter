@@ -274,6 +274,23 @@ final class RuntimeTests: XCTestCase {
         XCTAssertEqual(printedStrings, ["1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz", "16", "17", "Fizz", "19", "Buzz", "Fizz", "22", "23", "Fizz", "Buzz", "26", "Fizz", "28", "29", "FizzBuzz"])
     }
 
+  func testMemory() throws {
+      let fileURL = Bundle.module.url(forResource: "memory", withExtension: "wasm")!
+      let filePath = fileURL.path
+      let decoder = try WasmDecoder(filePath: filePath)
+      let wasm = try decoder.invoke()
+
+      let runtime = Runtime()
+      let moduleInstance = runtime.instanciate(module: wasm.module)
+      var result: Value?
+
+      try runtime.invoke(moduleInstance: moduleInstance,
+                         functionName: "init", arguments: [], result: &result)
+      try runtime.invoke(moduleInstance: moduleInstance,
+                         functionName: "load_and_store", arguments: [], result: &result)
+      XCTAssertEqual(result, .i32(10))
+  }
+
     func testMemoryAccumulate() throws {
         let fileURL = Bundle.module.url(forResource: "memory_accumulate", withExtension: "wasm")!
         let filePath = fileURL.path

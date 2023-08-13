@@ -257,13 +257,44 @@ extension Runtime {
             let bitWidth = 32 / 8
             let bytes = Array(memoryInstance.data[ea..<(ea + bitWidth)])
             
-            let bytesString = bytes.map { $0.hex }.joined()
-            let _tmp = Data(bytes).withUnsafeBytes { $0.load( as: I32.self ) }
-            
-            print("i32Value=\(i32Value), offset=\(memoryArgument.offset), ea=\(ea), bytesString=\(bytesString), value=\(_tmp)")
-
             let loadedValue = Value(type: .number(.i32), bytes: bytes)
             stack.push(value: loadedValue)
+
+        case let .i32Store(memoryArgument):
+            guard let frame = stack.currentFrame else {
+                fatalError()
+            }
+
+            let memoryAddress = frame.module.memoryAddresses[0]
+            let memoryInstance = store.memories[memoryAddress]
+
+            guard let value = stack.pop(.number(.i32)) else {
+                fatalError()
+            }
+            guard let i32Value = value.asI32 else {
+                fatalError()
+            }
+
+            guard let address = stack.pop(.number(.i32)) else {
+                fatalError()
+            }
+            guard let i32Address = address.asI32 else {
+                fatalError()
+            }
+
+            let ea = Int(i32Address) + Int(memoryArgument.offset)
+            let bitWidth = 32 / 8
+
+            guard memoryInstance.data.indices.contains(ea + bitWidth) else {
+                fatalError()
+            }
+
+            // convert value into bytes
+            // Should we consider them as little endian? like https://github.com/swiftwasm/WAKit/blob/929f72622c5fb16a9860317c497eaa201346bfda/Sources/WAKit/Execution/Types/Value.swift#L207-L214
+            var v = i32Value
+            let data = Data(bytes: &v, count: MemoryLayout.size(ofValue: v))
+
+            memoryInstance.data.replaceSubrange(ea ..< ea + bitWidth, with: data)
         case .dataDrop:
             fatalError()
             
