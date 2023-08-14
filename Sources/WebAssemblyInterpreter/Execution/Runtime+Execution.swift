@@ -574,6 +574,81 @@ extension Runtime {
 
             let result: I32 = value1 >= value2 ? 1 : 0
             stack.push(value: Value(i32: result))
+
+        case .f32Eq:
+            // https://webassembly.github.io/spec/core/exec/numerics.html#op-feq
+            guard let c2Value = stack.pop(.number(.f32)),
+                  let c1Value = stack.pop(.number(.f32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .f32(let value1) = c1Value,
+                  case .f32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result: I32 = value1 == value2 ? 1 : 0
+            stack.push(value: Value(i32: result))
+        case .f32Ne:
+            guard let c2Value = stack.pop(.number(.f32)),
+                  let c1Value = stack.pop(.number(.f32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .f32(let value1) = c1Value,
+                  case .f32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result: I32 = value1 != value2 ? 1 : 0
+            stack.push(value: Value(i32: result))
+        case .f32Lt:
+            guard let c2Value = stack.pop(.number(.f32)),
+                  let c1Value = stack.pop(.number(.f32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .f32(let value1) = c1Value,
+                  case .f32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result: I32 = value1 < value2 ? 1 : 0
+            stack.push(value: Value(i32: result))
+        case .f32Gt:
+            guard let c2Value = stack.pop(.number(.f32)),
+                  let c1Value = stack.pop(.number(.f32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .f32(let value1) = c1Value,
+                  case .f32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result: I32 = value1 > value2 ? 1 : 0
+            stack.push(value: Value(i32: result))
+        case .f32Le:
+            guard let c2Value = stack.pop(.number(.f32)),
+                  let c1Value = stack.pop(.number(.f32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .f32(let value1) = c1Value,
+                  case .f32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result: I32 = value1 <= value2 ? 1 : 0
+            stack.push(value: Value(i32: result))
+        case .f32Ge:
+            guard let c2Value = stack.pop(.number(.f32)),
+                  let c1Value = stack.pop(.number(.f32)) else {
+                throw RuntimeError.invalidValueType
+            }
+            guard case .f32(let value1) = c1Value,
+                  case .f32(let value2) = c2Value else {
+                throw RuntimeError.invalidValueType
+            }
+
+            let result: I32 = value1 >= value2 ? 1 : 0
+            stack.push(value: Value(i32: result))
+
         case .i32Clz:
             guard let cValue = stack.pop(.number(.i32)) else {
                 throw RuntimeError.invalidValueType

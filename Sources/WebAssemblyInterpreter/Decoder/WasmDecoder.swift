@@ -849,6 +849,19 @@ private extension WasmDecoder {
             case .i64GeU:
                 instruction = .i64GeU
 
+            case .f32Eq:
+                instruction = .f32Eq
+            case .f32Ne:
+                instruction = .f32Ne
+            case .f32Lt:
+                instruction = .f32Lt
+            case .f32Gt:
+                instruction = .f32Gt
+            case .f32Le:
+                instruction = .f32Le
+            case .f32Ge:
+                instruction = .f32Ge
+
             case .i32Clz:
                 instruction = .i32Clz
             case .i32Ctz:

@@ -333,4 +333,85 @@ final class RuntimeTests: XCTestCase {
                            functionName: "TestSquare", arguments: [.i32(4)], result: &result)
         XCTAssertEqual(result, .i32(16))
     }
+
+    func testF32() throws {
+        let fileURL = Bundle.module.url(forResource: "f32", withExtension: "wasm")!
+        let filePath = fileURL.path
+        let decoder = try WasmDecoder(filePath: filePath)
+        let wasm = try decoder.invoke()
+
+        let runtime = Runtime()
+        let moduleInstance = runtime.instanciate(module: wasm.module)
+        var result: Value?
+
+        // eq
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "f32_eq_test", arguments: [.f32(0), .f32(1.2)], result: &result)
+        XCTAssertEqual(result, .i32(0))
+
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "f32_eq_test", arguments: [.f32(1.2), .f32(1.2)], result: &result)
+        XCTAssertEqual(result, .i32(1))
+
+        // ne
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "f32_ne_test", arguments: [.f32(0), .f32(1.2)], result: &result)
+        XCTAssertEqual(result, .i32(1))
+
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "f32_ne_test", arguments: [.f32(1.2), .f32(1.2)], result: &result)
+        XCTAssertEqual(result, .i32(0))
+
+        // lt
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "f32_lt_test", arguments: [.f32(1.1), .f32(1.2)], result: &result)
+        XCTAssertEqual(result, .i32(1))
+
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "f32_lt_test", arguments: [.f32(1.2), .f32(1.2)], result: &result)
+        XCTAssertEqual(result, .i32(0))
+
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "f32_lt_test", arguments: [.f32(1.3), .f32(1.2)], result: &result)
+        XCTAssertEqual(result, .i32(0))
+
+        // gt
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "f32_gt_test", arguments: [.f32(1.1), .f32(1.2)], result: &result)
+        XCTAssertEqual(result, .i32(0))
+
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "f32_gt_test", arguments: [.f32(1.2), .f32(1.2)], result: &result)
+        XCTAssertEqual(result, .i32(0))
+
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "f32_gt_test", arguments: [.f32(1.3), .f32(1.2)], result: &result)
+        XCTAssertEqual(result, .i32(1))
+
+        // le
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "f32_le_test", arguments: [.f32(1.1), .f32(1.2)], result: &result)
+        XCTAssertEqual(result, .i32(1))
+
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "f32_le_test", arguments: [.f32(1.2), .f32(1.2)], result: &result)
+        XCTAssertEqual(result, .i32(1))
+
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "f32_le_test", arguments: [.f32(1.3), .f32(1.2)], result: &result)
+        XCTAssertEqual(result, .i32(0))
+
+        // ge
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "f32_ge_test", arguments: [.f32(1.1), .f32(1.2)], result: &result)
+        XCTAssertEqual(result, .i32(0))
+
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "f32_ge_test", arguments: [.f32(1.2), .f32(1.2)], result: &result)
+        XCTAssertEqual(result, .i32(1))
+
+        try runtime.invoke(moduleInstance: moduleInstance,
+                           functionName: "f32_ge_test", arguments: [.f32(1.3), .f32(1.2)], result: &result)
+        XCTAssertEqual(result, .i32(1))
+    }
 }

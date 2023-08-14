@@ -580,6 +580,8 @@ private extension WasmEncoder {
                 break
             case .i64Eqz, .i64Eq, .i64Ne, .i64LtS, .i64LtU, .i64GtS, .i64GtU, .i64LeS, .i64LeU, .i64GeS, .i64GeU:
                 break
+            case .f32Eq, .f32Ne, .f32Lt, .f32Gt, .f32Le, .f32Ge:
+                break
             case .i32Clz, .i32Ctz, .i32Popcnt, .i32Add, .i32Sub, .i32Mul, .i32DivS, .i32DivU, .i32RemS, .i32RemU, .i32And, .i32Or, .i32Xor, .i32Shl, .i32ShrS, .i32ShrU, .i32Rotl, .i32Rotr:
                 break
             case .i64Clz, .i64Ctz, .i64Popcnt, .i64Add, .i64Sub, .i64Mul, .i64DivS, .i64DivU, .i64RemS, .i64RemU, .i64And, .i64Or, .i64Xor, .i64Shl, .i64ShrS, .i64ShrU, .i64Rotl, .i64Rotr:

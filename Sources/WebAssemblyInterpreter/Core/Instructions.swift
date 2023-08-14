@@ -79,7 +79,14 @@ enum Instruction {
     case i64LeU
     case i64GeS
     case i64GeU
-    
+
+    case f32Eq
+    case f32Ne
+    case f32Lt
+    case f32Gt
+    case f32Le
+    case f32Ge
+
     case i32Clz
     case i32Ctz
     case i32Popcnt
@@ -202,6 +209,13 @@ extension Instruction {
         case i64GeS = 0x59
         case i64GeU = 0x5A
 
+        case f32Eq = 0x5B
+        case f32Ne = 0x5C
+        case f32Lt = 0x5D
+        case f32Gt = 0x5E
+        case f32Le = 0x5F
+        case f32Ge = 0x60
+
         case i32Clz = 0x67
         case i32Ctz = 0x68
         case i32Popcnt = 0x69
@@ -315,6 +329,13 @@ extension Instruction {
         case .i64LeU: return .i64LeU
         case .i64GeS: return .i64GeS
         case .i64GeU: return .i64GeU
+
+        case .f32Eq: return .f32Eq
+        case .f32Ne: return .f32Ne
+        case .f32Lt: return .f32Lt
+        case .f32Gt: return .f32Gt
+        case .f32Le: return .f32Le
+        case .f32Ge: return .f32Ge
 
         case .i32Clz: return .i32Clz
         case .i32Ctz: return .i32Ctz
