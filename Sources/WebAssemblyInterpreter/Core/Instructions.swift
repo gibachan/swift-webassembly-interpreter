@@ -46,6 +46,7 @@ enum Instruction {
     // https://webassembly.github.io/spec/core/binary/instructions.html#memory-instructions
     case i32Load(MemoryArgument)
     case i32Store(MemoryArgument)
+    case memoryGrow(AdditionalMemoryIndex)
     case dataDrop(DataIndex)
     
     // Numeric Instructions
@@ -167,6 +168,7 @@ extension Instruction {
         // https://webassembly.github.io/spec/core/binary/instructions.html#memory-instructions
         case i32Load = 0x28
         case i32Store = 0x36
+        case memoryGrow = 0x40
         case dataDrop = 0xFC
 
         // Numeric Instructions
@@ -281,6 +283,7 @@ extension Instruction {
         // Memory Instructions
         case .i32Load: return .i32Load
         case .i32Store: return .i32Store
+        case .memoryGrow: return .memoryGrow
         case .dataDrop: return .dataDrop
             
         // Numeric Instructions
@@ -392,4 +395,11 @@ extension Instruction {
 struct MemoryArgument {
     let offset: U32
     let align: U32
+}
+
+// Note
+// In future versions of WebAssembly, the additional zero bytes occurring in the encoding of the
+// memory.size, memory.grow, memory.copy and memory.fill instructions may be used to index additional memories.
+struct AdditionalMemoryIndex {
+  let byte: Byte // 0x00
 }

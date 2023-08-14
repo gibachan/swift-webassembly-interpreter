@@ -767,6 +767,15 @@ private extension WasmDecoder {
                 let memoryArgument = MemoryArgument(offset: offset,
                                                     align: align)
                 instruction = .i32Store(memoryArgument)
+            case .memoryGrow:
+                guard let byte = source.consume() else {
+                    throw WasmDecodeError.illegalExpression
+                }
+
+                // byte should be 0x00
+                
+                instruction = .memoryGrow(.init(byte: byte))
+                
             case .dataDrop:
                 guard let const = source.consumeU32(),
                       const == 9 else {

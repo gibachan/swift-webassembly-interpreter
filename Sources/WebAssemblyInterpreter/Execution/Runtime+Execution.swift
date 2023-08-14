@@ -295,6 +295,11 @@ extension Runtime {
             let data = Data(bytes: &v, count: MemoryLayout.size(ofValue: v))
 
             memoryInstance.data.replaceSubrange(ea ..< ea + bitWidth, with: data)
+
+        case .memoryGrow:
+            // Not yet implemented
+            break
+
         case .dataDrop:
             fatalError()
             

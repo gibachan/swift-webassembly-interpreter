@@ -562,7 +562,9 @@ private extension WasmEncoder {
                 memoryArgument.offset.unsignedLEB128.forEach {
                     bytes.append($0)
                 }
-                
+            case let .memoryGrow(additionalMemoryIndex):
+                bytes.append(additionalMemoryIndex.byte)
+
             case let .dataDrop(dataIndex):
                 U32(9).unsignedLEB128.forEach {
                     bytes.append($0)
